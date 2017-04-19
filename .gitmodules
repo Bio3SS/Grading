@@ -1,0 +1,3 @@
+[submodule "Assignments"]
+	path = Assignments
+	url = git@github.com:Bio3SS/Assignments.git
