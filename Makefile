@@ -57,7 +57,7 @@ pollScore.students.csv: pollScore.Rout.csv
 ## Not handled by TAs because of scantron glitch. Need to merge with TA spreadsheet
 
 ## Assignments as a submodule? Bold.
-evaluation_module:
+Tests:
 	git submodule add git@github.com:Bio3SS/Evaluation_materials.git
 
 assignments_module:
