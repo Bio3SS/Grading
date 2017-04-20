@@ -2,7 +2,7 @@
 ### Hooks for the editor to set the default target
 current: target
 
-target pngtarget pdftarget vtarget acrtarget: final.scores.Rout.csv 
+target pngtarget pdftarget vtarget acrtarget: final.merge.Rout 
 
 ##################################################################
 
@@ -10,12 +10,13 @@ target pngtarget pdftarget vtarget acrtarget: final.scores.Rout.csv
 
 Sources = Makefile .gitignore README.md stuff.mk LICENSE.md
 include stuff.mk
-# include $(ms)/perl.def
+-include $(ms)/perl.def
 
 Makefile: makestuff
 Sources += makestuff
 makestuff:
-	git submodule add git@github.com:dushoff/$@.git
+	git submodule init $@
+	git submodule update $@
 
 ##################################################################
 
@@ -66,8 +67,13 @@ pollScore.students.csv: pollScore.Rout.csv
 ## Haven't really thought about whether to analyze tests here, or in Tests, or to make an analysis directory... right now just focused on calculating grades.
 
 Sources += Tests
+Tests.new:
+	git submodule add git@github.com:Bio3SS/Tests.git
+
 Tests:
-	git submodule init git@github.com:Bio3SS/Tests.git
+	git submodule init $@
+	git submodule update $@
+	cp local.mk $@/
 
 .PRECIOUS: Tests/%
 Tests/%: Tests
@@ -75,6 +81,9 @@ Tests/%: Tests
 
 %.responses.csv: $(files)/%.responses.csv
 	perl -ne 'print if /^[0-9]{3}/' $< > $@
+
+scoreTable.csv: $(files)/scoreTable.csv
+	$(copy)
 
 %.orders: Tests/%.orders
 	$(copy)
@@ -86,6 +95,9 @@ final.scores.Rout: %.scores.Rout: %.responses.csv %.orders %.ssv scores.R
 	$(run-R)
 
 final.scores.Rout.csv: 
+
+final.merge.Rout: scoreTable.csv final.scores.Rout idmerge.R
+	$(run-R)
 
 ######################################################################
 
