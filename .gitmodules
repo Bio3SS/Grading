@@ -1,0 +1,6 @@
+[submodule "Tests"]
+	path = Tests
+	url = git@github.com:Bio3SS/Tests.git
+[submodule "makestuff"]
+	path = makestuff
+	url = git@github.com:dushoff/makestuff.git

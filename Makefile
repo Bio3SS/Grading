@@ -2,7 +2,7 @@
 ### Hooks for the editor to set the default target
 current: target
 
-target pngtarget pdftarget vtarget acrtarget: evaluation_module 
+target pngtarget pdftarget vtarget acrtarget: final.scores.Rout.csv 
 
 ##################################################################
 
@@ -12,11 +12,16 @@ Sources = Makefile .gitignore README.md stuff.mk LICENSE.md
 include stuff.mk
 # include $(ms)/perl.def
 
+Makefile: makestuff
+Sources += makestuff
+makestuff:
+	git submodule add git@github.com:dushoff/$@.git
+
 ##################################################################
 
 ## Crib
 
-Crib = ~/git/Grading_scripts
+Crib = ~/git/Bio3SS_content
 
 %.R:
 	$(CP) $(Crib)/$@ .
@@ -29,11 +34,13 @@ Sources += $(wildcard *.R *.pl)
 
 files = $(Drop)/courses/3SS/2017
 
+files:
+	$(LNF) $(files) $@
+
 ######################################################################
 
 ## Polls
 
-## Don't push these because of privacy!
 polls.csv extraPolls.ssv:
 	/bin/cp -f $(files)/$@ .
 
@@ -52,17 +59,33 @@ pollScore.students.csv: pollScore.Rout.csv
 
 ######################################################################
 
-## Final
+## Final marks
 
 ## Not handled by TAs because of scantron glitch. Need to merge with TA spreadsheet
 
-## Assignments as a submodule? Bold.
-Tests:
-	git submodule add git@github.com:Bio3SS/Evaluation_materials.git
+## Haven't really thought about whether to analyze tests here, or in Tests, or to make an analysis directory... right now just focused on calculating grades.
 
-assignments_module:
-	git submodule deinit Assignments
-	git rm Assignments
+Sources += Tests
+Tests:
+	git submodule init git@github.com:Bio3SS/Tests.git
+
+.PRECIOUS: Tests/%
+Tests/%: Tests
+	cd $< && $(MAKE) $*
+
+%.responses.csv: $(files)/%.responses.csv
+	perl -ne 'print if /^[0-9]{3}/' $< > $@
+
+%.orders: Tests/%.orders
+	$(copy)
+
+%.ssv: Tests/%.ssv
+	$(copy)
+
+final.scores.Rout: %.scores.Rout: %.responses.csv %.orders %.ssv scores.R
+	$(run-R)
+
+final.scores.Rout.csv: 
 
 ######################################################################
 
