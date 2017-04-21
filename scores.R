@@ -41,6 +41,6 @@ bubbleScores <- data.frame(
 	score = bubbleSel
 )
 
-write.csv(bubbleScores, csvname)
+write.csv(bubbleScores, csvname, row.names=FALSE)
 
 # rdsave(key, answers, versionOrder, scoreVersion, bubbleScores)
