@@ -2,7 +2,7 @@
 ### Hooks for the editor to set the default target
 current: target
 
-target pngtarget pdftarget vtarget acrtarget: final.merge.Rout 
+target pngtarget pdftarget vtarget acrtarget: all.Rout 
 
 ##################################################################
 
@@ -49,6 +49,7 @@ polls.csv extraPolls.ssv:
 polls.Rout: polls.csv polls.R
 
 # Parse the big csv in some way. Tags things that couldn't be matched to Mac address with UNKNOWN
+# Treat the last question as a fake, and use it to help with ID
 parsePolls.Rout: polls.Rout parsePolls.R
 
 # Calculate a pollScore and combine with the extraScore made by hand
@@ -59,10 +60,6 @@ pollScore.students.csv: pollScore.Rout.csv
 	perl -ne "print unless /UNKNOWN/" $< > $@
 
 ######################################################################
-
-## Final marks
-
-## Not handled by TAs because of scantron glitch. Need to merge with TA spreadsheet
 
 ## Haven't really thought about whether to analyze tests here, or in Tests, or to make an analysis directory... right now just focused on calculating grades.
 
@@ -106,6 +103,16 @@ final.merge.Rout: scoreTable.csv final.scores.Rout idmerge.R
 	$(run-R)
 
 ######################################################################
+
+## Merge final and poll marks into TA spreadsheet
+
+TA.csv: files/furman.csv
+	$(copy)
+
+all.Rout: TA.csv pollScore.students.csv final.merge.Rout all.R
+
+######################################################################
+
 
 -include $(ms)/git.mk
 -include $(ms)/visual.mk

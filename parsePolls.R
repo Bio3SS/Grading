@@ -1,9 +1,22 @@
+print(id)
+print(report)
+
+## Transfer the fake question from question world to id world
+id$ques <- report[[ncol(report)]]
+report <- report[-ncol(report)]
+rec <- rec[-ncol(report)]
+
+print(summary(id))
+
 emails <- with(id, {sapply(1:nrow(id), function(i){
 	if(grepl("mcmaster", Email[[i]], ignore.case=TRUE)){
 		return(as.character(Email[[i]]))
 	}
 	if(grepl("mcmaster", Responding.As[[i]], ignore.case=TRUE)){
 		return(as.character(Responding.As[[i]]))
+	}
+	if(grepl("\\w", ques[[i]])){
+		return(as.character(ques[[i]]))
 	}
 	return(paste(
 		"UNKNOWN"
