@@ -22,7 +22,7 @@ makestuff/Makefile: %/Makefile:
 
 ## Crib
 
-Crib = ~/git/Bio3SS_content
+# Crib = ~/git/Bio3SS_content
 
 %.R:
 	$(CP) $(Crib)/$@ .
@@ -42,8 +42,8 @@ files:
 
 ## Polls
 
-polls.csv extraPolls.ssv:
-	/bin/cp -f $(files)/$@ .
+polls.csv extraPolls.ssv: %: $(files)/%
+	$(copy)
 
 # Read the polls into a big csv without most of the useless information
 polls.Rout: polls.csv polls.R
@@ -109,7 +109,13 @@ final.merge.Rout: scoreTable.csv final.scores.Rout idmerge.R
 TA.csv: files/furman.csv
 	$(copy)
 
-all.Rout: TA.csv pollScore.students.csv final.merge.Rout all.R
+TA.Rout: TA.csv TA.R
+
+all.Rout: TA.Rout pollScore.students.csv final.merge.Rout all.R
+
+## Current: whatever I'm currently outputting for Avenue or Mosaic
+current.Rout: all.Rout current.R
+current.Rout.csv: current.R
 
 ######################################################################
 
