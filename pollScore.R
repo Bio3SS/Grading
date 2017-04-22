@@ -1,4 +1,6 @@
 
+library(dplyr)
+
 needMax <- 0.9
 weight <- (sum(1/qq))
 print(weight)
@@ -10,6 +12,12 @@ score <- apply(as.matrix(report), 1, function(s){
 })
 
 sf <- data.frame(id=id, score=score)
+sf <- (sf
+	%>% mutate(id = sub(",.*", "", id))
+	%>% group_by(id)
+	%>% summarise(score = sum(score))
+)
+
 ef <- read.table(input_files[[1]], header=TRUE)
 df <- merge(sf, ef, all.x=TRUE)
 df <- within(df, {
@@ -19,11 +27,9 @@ df <- within(df, {
 	score <- round(100*score)/100
 })
 
-library(dplyr)
-
 df <- (df
-	%>% group_by(id)
-	%>% summarise(score = sum(score))
+	%>% transmute(Username=id, poll=score)
 )
+
 write.csv(file=csvname, df, row.names=FALSE)
 

@@ -2,8 +2,8 @@ report <- read.csv(input_files[[1]])
 names(report) <- sub("Reponding", "Responding", names(report))
 print(names(report))
 
-idfields <- 1:5
-
+## Spin out different kinds of fields (id, time received, modality)
+idfields <- c(1:5)
 id <- report[idfields]
 report <- report[-idfields]
 
