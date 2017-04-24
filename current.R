@@ -4,7 +4,8 @@ current <- (tab
 	%>% transmute(Username=Username
 		, final = ifelse(is.na(final), -95, final) 
 		, poll = ifelse(is.na(poll), -95, poll) 
-		# , End.of.Line.Indicator = End.of.Line.Indicator
+		, mark = mark 
+		, End.of.Line.Indicator = End.of.Line.Indicator
 	)
 )
 

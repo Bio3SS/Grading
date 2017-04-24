@@ -1,13 +1,13 @@
 library(dplyr)
-finalFrame <- read.csv(input_files[[1]])
+scoreTable <- read.csv(input_files[[1]])
 
-summary(finalFrame)
-summary(bubbleScores)
+summary(scoreTable)
+summary(finalMarks)
 
-finalScore <- (finalFrame
+finalScore <- (scoreTable
 	%>% transmute(Username=User.ID, idnum=Student.Number) 
 	%>% mutate(Username=sub("@.*", "", Username))
-	%>% full_join(bubbleScores)
+	%>% full_join(finalMarks)
 	%>% rename(final=score)
 )
 

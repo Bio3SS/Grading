@@ -1,10 +1,9 @@
-print(id)
-print(report)
 
 ## Transfer the fake question from question world to id world
-id$ques <- report[[ncol(report)]]
-report <- report[-ncol(report)]
-rec <- rec[-ncol(report)]
+fq <-(which(grepl("McMaster", names(report))))
+id$ques <- report[[fq]]
+report <- report[-fq]
+rec <- rec[-fq]
 
 print(summary(id))
 

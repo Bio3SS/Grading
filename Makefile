@@ -2,7 +2,7 @@
 ### Hooks for the editor to set the default target
 current: target
 
-target pngtarget pdftarget vtarget acrtarget: all.Rout 
+target pngtarget pdftarget vtarget acrtarget: current.Rout.csv 
 
 ##################################################################
 
@@ -95,11 +95,17 @@ scoreTable.csv: $(files)/scoreTable.csv
 final.scores.Rout: %.scores.Rout: %.responses.csv %.orders %.ssv scores.R
 	$(run-R)
 
-# Also makes this currently unused file
-final.scores.Rout.csv: 
+## One question now has two legal answers; fix with this awkward method
+## Score only the extra answer
+Sources += fix.ssv
+fix.scores.Rout: %.scores.Rout: final.responses.csv final.orders %.ssv scores.R
+	$(run-R)
+# Add results from two scoring methods
+ff.scores.Rout: fix.scores.Rout.envir final.scores.Rout.envir ff.R
+	$(run-R)
 
 # Merge the final results with IDs, since we use them everywhere else (not numbers)
-final.merge.Rout: scoreTable.csv final.scores.Rout idmerge.R
+final.merge.Rout: scoreTable.csv ff.scores.Rout idmerge.R
 	$(run-R)
 
 ######################################################################
