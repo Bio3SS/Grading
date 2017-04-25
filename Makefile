@@ -2,7 +2,7 @@
 ### Hooks for the editor to set the default target
 current: target
 
-target pngtarget pdftarget vtarget acrtarget: mosaic.Rout.csv 
+target pngtarget pdftarget vtarget acrtarget: current.Rout.csv 
 
 ##################################################################
 
@@ -127,6 +127,7 @@ current.Rout.csv: current.R
 ######################################################################
 
 ## Merge grade into mosaic spreadsheet
+## Rebecca thinks we want Class, 9-digit ID, 2-digit mark (no headings)
 
 mosaic.Rout: files/roster.csv all.Rout mosaic.R
 mosaic.Rout.csv: mosaic.R

@@ -17,10 +17,10 @@ merge <- (roster
 )
 
 roster <- (roster
-	%>% mutate(Roster_Grade=merge$mark)
-	%>% mutate(Student_Nbr=sprintf("%09d", as.numeric(Student_Nbr)))
+	%>% transmute(Class=Class
+		,  Student_Nbr=sprintf("%09d", as.numeric(Student_Nbr))
+		, Roster_Grade=as.integer(merge$mark)
+	)
 )
 
-names(roster) <- n
-
-write_csv(roster, csvname)
+write_csv(roster, csvname, col_names=FALSE)
