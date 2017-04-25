@@ -130,6 +130,7 @@ current.Rout.csv: current.R
 ######################################################################
 
 ## Merge grade into mosaic spreadsheet
+## List DNWs manually (just for confirmation)
 
 mosaic.Rout: files/roster.csv all.Rout mosaic.R
 mosaic.Rout.csv: mosaic.R

@@ -2,11 +2,7 @@ library(dplyr)
 library(readr)
 
 roster <- read_csv(input_files[[1]])
-n <- names(roster)
-
-names(roster) <- gsub(" ", "_", n)
-
-print(n)
+names(roster) <- gsub(" ", "_", names(roster))
 
 summary(tab)
 summary(roster)
@@ -14,6 +10,11 @@ summary(roster)
 merge <- (roster
 	%>% rename(idnum=Student_Nbr)
 	%>% left_join(tab)
+)
+
+print(tab
+	%>% filter(final==0)
+	%>% select(idnum)
 )
 
 roster <- (roster
