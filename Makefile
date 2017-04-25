@@ -81,6 +81,9 @@ Tests/%: Tests/Makefile
 	perl -ne 'print if /^[0-9]{3}/' $< > $@
 
 ## Table decoding and marks table. Marks are broken in 2017, so we're marking with scripts here.
+## Ideally, we should mark here and then compare: QC and help kids who might have versioned wrong; or catch kids who versioned wrong on purpose (to copy)
+## scoreTable should not be used for decoding, since it's missing kids we need but who didn't take the exam
+## In 2017, it's not part of the final pipeline at all
 scoreTable.csv: $(files)/scoreTable.csv
 	$(copy)
 
@@ -105,7 +108,7 @@ ff.scores.Rout: fix.scores.Rout.envir final.scores.Rout.envir ff.R
 	$(run-R)
 
 # Merge the final results with IDs, since we use them everywhere else (not numbers)
-final.merge.Rout: scoreTable.csv ff.scores.Rout idmerge.R
+final.merge.Rout: files/furman_final.csv ff.scores.Rout idmerge.R
 	$(run-R)
 
 ######################################################################

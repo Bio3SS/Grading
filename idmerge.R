@@ -5,7 +5,7 @@ summary(scoreTable)
 summary(finalMarks)
 
 finalScore <- (scoreTable
-	%>% transmute(Username=User.ID, idnum=Student.Number) 
+	%>% transmute(Username=Username, idnum=OrgDefinedId) 
 	%>% mutate(Username=sub("@.*", "", Username))
 	%>% full_join(finalMarks)
 	%>% rename(final=score)
