@@ -130,7 +130,6 @@ current.Rout.csv: current.R
 ######################################################################
 
 ## Merge grade into mosaic spreadsheet
-## Rebecca thinks we want Class, 9-digit ID, 2-digit mark (no headings)
 
 mosaic.Rout: files/roster.csv all.Rout mosaic.R
 mosaic.Rout.csv: mosaic.R
