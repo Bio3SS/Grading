@@ -62,7 +62,7 @@ tab <- (tab
 
 tab <- (tab
 	%>% mutate(
-		mark = round(90.*testAve + 10.*asnAve + poll)
+		mark = floor(90.*testAve + 10.*asnAve + poll)
 	)
 )
 print(mean(tab$mark>=89.5))

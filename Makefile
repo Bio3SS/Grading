@@ -2,7 +2,7 @@
 ### Hooks for the editor to set the default target
 current: target
 
-target pngtarget pdftarget vtarget acrtarget: current.Rout.csv 
+target pngtarget pdftarget vtarget acrtarget: mosaic.Rout.csv 
 
 ##################################################################
 
@@ -112,11 +112,12 @@ final.merge.Rout: scoreTable.csv ff.scores.Rout idmerge.R
 
 ## Merge final and poll marks into TA spreadsheet
 
+# Read and name
 TA.csv: files/furman.csv
 	$(copy)
-
 TA.Rout: TA.csv TA.R
 
+# Calculate final and merge; carry StudentNo and ID. Need consistent names
 all.Rout: TA.Rout pollScore.students.csv final.merge.Rout all.R
 
 ## Current: whatever I'm currently outputting for Avenue or Mosaic
@@ -125,6 +126,10 @@ current.Rout.csv: current.R
 
 ######################################################################
 
+## Merge grade into mosaic spreadsheet
+
+mosaic.Rout: files/roster.csv all.Rout mosaic.R
+mosaic.Rout.csv: mosaic.R
 
 -include $(ms)/git.mk
 -include $(ms)/visual.mk
