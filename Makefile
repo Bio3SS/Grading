@@ -1,8 +1,12 @@
 # Grading
+
+# Change codes UGRD/SCI/2171/02/BIOLOGY/101187
+# Maybe
+
 ### Hooks for the editor to set the default target
 current: target
 
-target pngtarget pdftarget vtarget acrtarget: mosaic.Rout.csv 
+target pngtarget pdftarget vtarget acrtarget: mosaic.diff 
 
 ##################################################################
 
@@ -108,6 +112,7 @@ ff.scores.Rout: fix.scores.Rout.envir final.scores.Rout.envir ff.R
 	$(run-R)
 
 # Merge the final results with IDs, since we use them everywhere else (not numbers)
+# furman_final is used only for ID matching
 final.merge.Rout: files/furman_final.csv ff.scores.Rout idmerge.R
 	$(run-R)
 
@@ -132,7 +137,21 @@ current.Rout.csv: current.R
 ## Merge grade into mosaic spreadsheet
 
 mosaic.Rout: files/roster.csv all.Rout mosaic.R
-mosaic.Rout.csv: mosaic.R
+mosaic.Rout.csv: mosaic.Rout ;
+
+## Note: furman_final is a different kind of file (merged by Furman after I started here); others are upstream with corrections
+furman.%.csv:
+	$(CP) files/furman.csv $@
+	$(CP) $@ files/
+
+## Next time, record what all of these mean!
+## Or -- don't use files, use the secret repo
+mosaic.%.csv:
+	$(CP) mosaic.Rout.csv $@
+	$(CP) $@ files/
+
+mosaic.diff: mosaic.Rout.csv
+	-diff `ls mosaic.?.csv | tail -1` $< | perl -nE "print if s/^> //" > $@
 
 -include $(ms)/git.mk
 -include $(ms)/visual.mk
