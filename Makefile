@@ -1,6 +1,6 @@
 # Grading
 
-# Change codes UGRD/SCI/2171/02/BIOLOGY/101187
+# Change codes UGRD/2171/02/BIOLOGY/101187
 # Maybe
 
 ### Hooks for the editor to set the default target
