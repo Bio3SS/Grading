@@ -1,8 +1,8 @@
 library(dplyr)
 
-downgrade <- 10 ## 0 for no downgrade
-avenueZero <- -99
-avenueNA <- -95
+downgrade <- 10 ## 0 for no downgrade (power = number completed)
+avenueMissing <- -95
+avenueMSAF <- -99
 
 testwt <- c(25, 25, 40)
 asntot <- c(16, 12, 9, 10)
@@ -23,8 +23,8 @@ print(summary(tab))
 # The 3SS power average is an L-mean where L is a function of the number of tests completed
 
 powerAve <- function(scores, dens, weights){
-	scores <- ifelse(scores==avenueZero, 0, scores)
-	scores <- ifelse(scores==avenueNA, NA, scores)
+	scores <- ifelse(scores==avenueMissing, 0, scores)
+	scores <- ifelse(scores==avenueMSAF, NA, scores)
 	power <- sum(sign(1+scores), na.rm=TRUE)
 	power <- (power+downgrade)/(1+downgrade) 
 	weight <- sum(sign(1+scores)*weights, na.rm=TRUE)
@@ -62,7 +62,7 @@ tab <- (tab
 
 tab <- (tab
 	%>% mutate(
-		mark = round(90.*testAve + 10.*asnAve + poll)
+		mark = floor(90.*testAve + 10.*asnAve + poll)
 	)
 )
 print(mean(tab$mark>=89.5))

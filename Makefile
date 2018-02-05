@@ -1,8 +1,12 @@
 # Grading
+
+# Change codes UGRD/2171/02/BIOLOGY/101187
+# Maybe
+
 ### Hooks for the editor to set the default target
 current: target
 
-target pngtarget pdftarget vtarget acrtarget: all.Rout 
+target pngtarget pdftarget vtarget acrtarget: mosaic.diff 
 
 ##################################################################
 
@@ -81,6 +85,9 @@ Tests/%: Tests/Makefile
 	perl -ne 'print if /^[0-9]{3}/' $< > $@
 
 ## Table decoding and marks table. Marks are broken in 2017, so we're marking with scripts here.
+## Ideally, we should mark here and then compare: QC and help kids who might have versioned wrong; or catch kids who versioned wrong on purpose (to copy)
+## scoreTable should not be used for decoding, since it's missing kids we need but who didn't take the exam
+## In 2017, it's not part of the final pipeline at all
 scoreTable.csv: $(files)/scoreTable.csv
 	$(copy)
 
@@ -95,22 +102,30 @@ scoreTable.csv: $(files)/scoreTable.csv
 final.scores.Rout: %.scores.Rout: %.responses.csv %.orders %.ssv scores.R
 	$(run-R)
 
-# Also makes this currently unused file
-final.scores.Rout.csv: 
+## One question now has two legal answers; fix with this awkward method
+## Score only the extra answer
+Sources += fix.ssv
+fix.scores.Rout: %.scores.Rout: final.responses.csv final.orders %.ssv scores.R
+	$(run-R)
+# Add results from two scoring methods
+ff.scores.Rout: fix.scores.Rout.envir final.scores.Rout.envir ff.R
+	$(run-R)
 
 # Merge the final results with IDs, since we use them everywhere else (not numbers)
-final.merge.Rout: scoreTable.csv final.scores.Rout idmerge.R
+# furman_final is used only for ID matching
+final.merge.Rout: files/furman_final.csv ff.scores.Rout idmerge.R
 	$(run-R)
 
 ######################################################################
 
 ## Merge final and poll marks into TA spreadsheet
 
+# Read and name
 TA.csv: files/furman.csv
 	$(copy)
-
 TA.Rout: TA.csv TA.R
 
+# Calculate final and merge; carry StudentNo and ID. Need consistent names
 all.Rout: TA.Rout pollScore.students.csv final.merge.Rout all.R
 
 ## Current: whatever I'm currently outputting for Avenue or Mosaic
@@ -119,6 +134,25 @@ current.Rout.csv: current.R
 
 ######################################################################
 
+## Merge grade into mosaic spreadsheet
+## List DNWs manually (just for confirmation)
+
+mosaic.Rout: files/roster.csv all.Rout mosaic.R
+mosaic.Rout.csv: mosaic.Rout ;
+
+## Note: furman_final is a different kind of file (merged by Furman after I started here); others are upstream with corrections
+furman.%.csv:
+	$(CP) files/furman.csv $@
+	$(CP) $@ files/
+
+## Next time, record what all of these mean!
+## Or -- don't use files, use the secret repo
+mosaic.%.csv:
+	$(CP) mosaic.Rout.csv $@
+	$(CP) $@ files/
+
+mosaic.diff: mosaic.Rout.csv
+	-diff `ls mosaic.?.csv | tail -1` $< | perl -nE "print if s/^> //" > $@
 
 -include $(ms)/git.mk
 -include $(ms)/visual.mk
