@@ -23,6 +23,7 @@ Sources += $(wildcard *.R *.pl)
 
 ## sd /home/dushoff/Dropbox/courses/3SS/2017 ##
 
+Ignore += dropdir
 dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2018
 dropdir:
 	$(linkdirname)
