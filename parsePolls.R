@@ -1,18 +1,22 @@
 
 ## Transfer the fake question from question world to id world
-fq <-(which(grepl("McMaster", names(report))))
-id$ques <- report[[fq]]
-report <- report[-fq]
-rec <- rec[-fq]
 
+fq <-(which(grepl("McMaster", names(report))))
+if(length(fq)==1){
+	id$ques <- report[[fq]]
+	report <- report[-fq]
+	rec <- rec[-fq]
+} else {id$ques <- "UNKNOWN"}
+
+## What does the id frame look like?
 print(summary(id))
 
 emails <- with(id, {sapply(1:nrow(id), function(i){
 	if(grepl("mcmaster", Email[[i]], ignore.case=TRUE)){
 		return(as.character(Email[[i]]))
 	}
-	if(grepl("mcmaster", Responding.As[[i]], ignore.case=TRUE)){
-		return(as.character(Responding.As[[i]]))
+	if(grepl("mcmaster", Custom.Report.ID[[i]], ignore.case=TRUE)){
+		return(as.character(Custom.Report.ID[[i]]))
 	}
 	if(grepl("\\w", ques[[i]])){
 		return(as.character(ques[[i]]))

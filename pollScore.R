@@ -5,9 +5,13 @@ needMax <- 0.9
 weight <- (sum(1/qq))
 print(weight)
 
+print(nrow(as.matrix(report)))
+print(length(qq))
+
 score <- apply(as.matrix(report), 1, function(s){
 	return(sum(
 		(nchar(as.character(s))>1)/qq
+		, na.rm=TRUE
 	))
 })
 
@@ -28,8 +32,9 @@ df <- within(df, {
 })
 
 df <- (df
-	%>% transmute(Username=id, poll=score)
+	%>% transmute(Username=id, Polls=score)
+	%>% filter(!is.na(Polls))
 )
 
+summary(df)
 write.csv(file=csvname, df, row.names=FALSE)
-

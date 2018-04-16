@@ -21,7 +21,7 @@ include sub.mk
 
 Sources += $(wildcard *.R *.pl)
 
-## /home/dushoff/Dropbox/courses/3SS/2017
+## sd /home/dushoff/Dropbox/courses/3SS/2017 ##
 
 dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2018
 dropdir:
@@ -32,6 +32,21 @@ dropdir/%: dropdir
 
 ## Polls
 
+## Get PollEverywhere data:
+## 	https://www.polleverywhere.com/reports / Create reports
+## 	Participant response history
+## 	Select groups for this year
+## 	Download csv (lower right)
+
+## To repeat:
+##		Reports / select report you want / Update reports (next to Current Run)
+
+##		downcall dropdir/polls.csv ##
+## Mosaic:
+## downcall dropdir/roster.xls
+
+######################################################################
+
 # Read the polls into a big csv without most of the useless information
 polls.Rout: dropdir/polls.csv polls.R
 
@@ -41,10 +56,10 @@ parsePolls.Rout: polls.Rout parsePolls.R
 
 # Calculate a pollScore and combine with the extraScore made by hand
 pollScore.Rout.csv: pollScore.R
-pollScore.Rout: extraPolls.ssv parsePolls.Rout pollScore.R
+pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
 
-pollScore.students.csv: pollScore.Rout.csv
-	perl -ne "print unless /UNKNOWN/" $< > $@
+## Doing this in R
+## pollScore.students.csv: pollScore.Rout.csv; perl -ne "print unless /(UNKNOWN|NA)/" $< > $@
 
 ######################################################################
 
