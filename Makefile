@@ -59,6 +59,8 @@ parsePolls.Rout: polls.Rout parsePolls.R
 pollScore.Rout.csv: pollScore.R
 pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
 
+pollScore.avenue.Rout: pollScore.Rout avenueMerge.R
+
 ## Doing this in R
 ## pollScore.students.csv: pollScore.Rout.csv; perl -ne "print unless /(UNKNOWN|NA)/" $< > $@
 
