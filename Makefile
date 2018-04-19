@@ -41,6 +41,7 @@ dropdir/%: dropdir ;
 
 ## Could make a fun (auto-sort) version of this rule some day
 
+Ignore += marks.tsv
 marks.tsv: dropdir/marks3.tsv zero.pl
 	$(PUSH)
 
@@ -84,6 +85,7 @@ pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=235353
 ## Try assesment/grades/enter grades/import
 
+Ignore += pollScore.avenue.Rout.csv
 pollScore.avenue.Rout.csv: avenueMerge.R
 %.avenue.Rout: %.Rout students.Rout avenueMerge.R
 	$(run-R)
