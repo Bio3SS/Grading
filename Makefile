@@ -27,7 +27,24 @@ Ignore += dropdir
 dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2018
 dropdir:
 	$(linkdirname)
-dropdir/%: dropdir
+dropdir/%: dropdir ;
+
+######################################################################
+
+## Spreadsheets
+
+## To do:
+##   reverse the hierarchy of this directory and Tests
+##   move calc-y stuff from Tests to here
+
+## We keep track with named versions, so that we don't have to git the spreadsheets
+
+## Could make a fun (auto-sort) version of this rule some day
+
+marks.tsv: dropdir/marks3.tsv zero.pl
+	$(PUSH)
+
+students.Rout: marks.tsv dropdir/drops.csv students.R
 
 ######################################################################
 
@@ -53,16 +70,29 @@ polls.Rout: dropdir/polls.csv polls.R
 
 # Parse the big csv in some way. Tags things that couldn't be matched to Mac address with UNKNOWN
 # Treat the last question as a fake, and use it to help with ID
+# May or may not be implemented
 parsePolls.Rout: polls.Rout parsePolls.R
 
 # Calculate a pollScore and combine with the extraScore made by hand
-pollScore.Rout.csv: pollScore.R
 pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
 
-pollScore.avenue.Rout: pollScore.Rout avenueMerge.R
+## Make an avenue file; should work with any number of fields ending in _score
+## along with a field for macid, idnum or both
 
-## Doing this in R
-## pollScore.students.csv: pollScore.Rout.csv; perl -ne "print unless /(UNKNOWN|NA)/" $< > $@
+## https://avenue.cllmcmaster.ca/d2l/home/235353
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/manage/gradeslist.d2l?ou=235353
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=235353
+## Try assesment/grades/enter grades/import
+
+pollScore.avenue.Rout.csv: avenueMerge.R
+%.avenue.Rout: %.Rout students.Rout avenueMerge.R
+	$(run-R)
+
+pollScore.avenue.csv: avenueNA.pl
+%.avenue.csv: %.avenue.Rout.csv avenueNA.pl
+	$(PUSH)
+
+pollScore.avenue.summary.Routput: 
 
 ######################################################################
 

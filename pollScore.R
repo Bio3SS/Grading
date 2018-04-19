@@ -31,10 +31,12 @@ df <- within(df, {
 	score <- round(100*score)/100
 })
 
-df <- (df
-	%>% transmute(Username=id, Polls=score)
-	%>% filter(!is.na(Polls))
+scores <- (df
+	%>% filter(!is.na(score))
+	%>% transmute(macid=id, Polls_score=score)
 )
 
-summary(df)
-write.csv(file=csvname, df, row.names=FALSE)
+summary(scores)
+
+# rdsave(scores)
+## write.csv(file=csvname, df, row.names=FALSE)
