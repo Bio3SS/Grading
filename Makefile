@@ -91,6 +91,7 @@ pollScore.avenue.Rout.csv: avenueMerge.R
 %.avenue.Rout: %.Rout students.Rout avenueMerge.R
 	$(run-R)
 
+Ignore += pollScore.avenue.csv
 pollScore.avenue.csv: avenueNA.pl
 %.avenue.csv: %.avenue.Rout.csv avenueNA.pl
 	$(PUSH)
