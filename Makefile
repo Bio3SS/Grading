@@ -68,6 +68,8 @@ students.Rout: marks.tsv dropdir/drops.csv students.R
 ######################################################################
 
 # Read the polls into a big csv without most of the useless information
+# 2018 Apr 20 (Fri) Manually changed an idnum to a macid
+# There is one perfect score with no identifiers, and two smallish orphan lines that could be identified if I wanted to bother
 polls.Rout: dropdir/polls.csv polls.R
 
 # Parse the big csv in some way. Tags things that couldn't be matched to Mac address with UNKNOWN
@@ -81,10 +83,8 @@ pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
 ## Make an avenue file; should work with any number of fields ending in _score
 ## along with a field for macid, idnum or both
 
-## https://avenue.cllmcmaster.ca/d2l/home/235353
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/manage/gradeslist.d2l?ou=235353
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=235353
-## Try assesment/grades/enter grades/import
+## import
 
 Ignore += pollScore.avenue.Rout.csv
 pollScore.avenue.Rout.csv: avenueMerge.R
