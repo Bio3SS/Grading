@@ -60,7 +60,8 @@ students.Rout: marks.tsv dropdir/drops.csv students.R
 ## To repeat:
 ##		Reports / select report you want / Update reports (next to Current Run)
 
-##		downcall dropdir/polls.csv ##
+##		downcall dropdir/polls.csv ## ## ##
+
 ## Mosaic:
 ## downcall dropdir/roster.xls
 
@@ -93,8 +94,6 @@ pollScore.avenue.Rout.csv: avenueMerge.R
 pollScore.avenue.csv: avenueNA.pl
 %.avenue.csv: %.avenue.Rout.csv avenueNA.pl
 	$(PUSH)
-
-pollScore.avenue.summary.Routput: 
 
 ######################################################################
 

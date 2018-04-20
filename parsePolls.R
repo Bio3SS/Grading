@@ -1,10 +1,12 @@
 
 ## Transfer the fake question from question world to id world
 
-fq <-(which(grepl("McMaster", names(report))))
+fq <-(which(grepl("macid", names(report))))
 if(length(fq)==1){
 	id$ques <- report[[fq]]
 	report <- report[-fq]
+	fqgroup <- fq:(fq+2)
+	# rec <- rec[-fqgroup]
 	rec <- rec[-fq]
 } else {id$ques <- "UNKNOWN"}
 
@@ -26,7 +28,7 @@ emails <- with(id, {sapply(1:nrow(id), function(i){
 		, Participant.First.Name[[i]]
 		, Participant.Last.Name[[i]]
 		, Email[[i]]
-		, Responding.As[[i]]
+		, Custom.Report.ID[[i]]
 		, sep="_"
 	))
 })})
