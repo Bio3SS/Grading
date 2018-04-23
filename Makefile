@@ -60,7 +60,7 @@ students.Rout: marks.tsv dropdir/drops.csv students.R
 ## To repeat:
 ##		Reports / select report you want / Update reports (next to Current Run)
 
-##		downcall dropdir/polls.csv ## ## ##
+##		downcall dropdir/polls.csv ## ## ## ##
 
 ## Mosaic:
 ## downcall dropdir/roster.xls
@@ -73,12 +73,16 @@ students.Rout: marks.tsv dropdir/drops.csv students.R
 polls.Rout: dropdir/polls.csv polls.R
 
 # Parse the big csv in some way. Tags things that couldn't be matched to Mac address with UNKNOWN
-# Treat the last question as a fake, and use it to help with ID
-# May or may not be implemented
+# Treat the question that matches "macid" as a fake (if present)
+# and use it to help with ID
 parsePolls.Rout: polls.Rout parsePolls.R
 
 # Calculate a pollScore and combine with the extraScore made by hand
 pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
+pollScore.Rout.csv: 
+
+# Merge to save people who repeatedly use student number
+pollScorePlus.Rout: pollScore.Rout students.Rout pollScorePlus.R
 
 ## Make an avenue file; should work with any number of fields ending in _score
 ## along with a field for macid, idnum or both
@@ -86,19 +90,29 @@ pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=235353
 ## import
 
-Ignore += pollScore.avenue.Rout.csv
-pollScore.avenue.Rout.csv: avenueMerge.R
+Ignore += pollScorePlus.avenue.Rout.csv
+pollScorePlus.avenue.Rout: avenueMerge.R
+pollScorePlus.avenue.Rout.csv: avenueMerge.R
 %.avenue.Rout: %.Rout students.Rout avenueMerge.R
 	$(run-R)
 
-Ignore += pollScore.avenue.csv
-pollScore.avenue.csv: avenueNA.pl
+Ignore += pollScorePlus.avenue.csv
+pollScorePlus.avenue.csv: avenueNA.pl
 %.avenue.csv: %.avenue.Rout.csv avenueNA.pl
 	$(PUSH)
 
 ######################################################################
 
-## Other stuff all suppressed for now!
+mdirs += Tests
+
+Tests:
+	git submodule add -b master https://github.com/Bio3SS/Life_history $@
+
+Sources += Tests
+
+######################################################################
+
+## Older stuff, currently unsuppressing
 
 Sources += grades.mk
 

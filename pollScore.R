@@ -37,6 +37,6 @@ scores <- (df
 )
 
 summary(scores)
+write.csv(file=csvname, df, row.names=FALSE)
 
 # rdsave(scores)
-## write.csv(file=csvname, df, row.names=FALSE)

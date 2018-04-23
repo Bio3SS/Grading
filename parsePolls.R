@@ -29,6 +29,8 @@ emails <- with(id, {sapply(1:nrow(id), function(i){
 		, Participant.Last.Name[[i]]
 		, Email[[i]]
 		, Custom.Report.ID[[i]]
+		, Screen.Name[[i]]
+		, Public.ID[[i]]
 		, sep="_"
 	))
 })})
