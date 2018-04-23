@@ -31,10 +31,10 @@ dropdir/%: dropdir ;
 
 ######################################################################
 
-## Spreadsheets
+## Spreadsheets with TA marks from HWs and SAs
+## How did we make original spreadsheet from Avenue?
 
 ## To do:
-##   reverse the hierarchy of this directory and Tests
 ##   move calc-y stuff from Tests to here
 
 ## We keep track with named versions, so that we don't have to git the spreadsheets
@@ -106,9 +106,43 @@ pollScorePlus.avenue.csv: avenueNA.pl
 mdirs += Tests
 
 Tests:
-	git submodule add -b master https://github.com/Bio3SS/Life_history $@
+	git submodule add -b master https://github.com/Bio3SS/$@
 
 Sources += Tests
+
+Tests/Makefile: %/Makefile:
+	git submodule init $*
+	git submodule update $*
+	-cp local.mk $*/
+
+.PRECIOUS: Tests/%
+Tests/%: Tests/Makefile
+	cd Tests && $(MAKE) $*
+
+######################################################################
+
+## Test scoring
+## This needs to be completely redone, since the manual scoring does not recognize multiple responses
+## The scantron pipeline _does_ recognize multiple responses, and the scantron people do it right.
+## Which means that we should, too
+
+midterm2.responses.tsv: dropdir/m2disk/BIOLOGY3SS323MAR2018.dlm
+	$(cat)
+
+midterm2.office.csv:
+midterm%.office.csv: dropdir/m%disk/StudentScoresWebCT.csv Makefile
+	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
+
+
+## Re-score here (gives us control over version errors)
+#### New scoring pipeline (old scoring pipeline is in Tests/)
+%.scoring.csv: Tests/%.scantron.csv scoring.pl
+	$(PUSH)
+midterm2.scoring.csv: Tests/midterm2.scantron.csv scoring.pl
+	$(PUSH)
+
+midterm2.scores.Rout: midterm2.responses.tsv midterm2.scoring.csv scores.R
+	$(run-R)
 
 ######################################################################
 

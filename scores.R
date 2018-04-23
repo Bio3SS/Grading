@@ -1,48 +1,49 @@
-## Sheets means scantron sheets
-sheets <- read.csv(input_files[[1]], header=FALSE, row.names=1)
-versionOrder <- read.table(input_files[[2]], header=FALSE, row.names=1)
-key <- as.character(read.table(input_files[[3]], header=FALSE, row.names=1)[[1]])
+library(readr)
+library(dplyr)
 
-answers <- as.matrix(sheets[-1])
+## Read stuff in
+responses <- read_tsv(grep("tsv", input_files, value=TRUE)
+	, col_names=FALSE
+	, na = c("NA") ## Space needs to mismatch, not NA 
+)
+
+key <- read_csv(grep("csv", input_files, value=TRUE))
+
+answers <- as.matrix(responses[-(1:2)])
+orders <- orders[-1]
+
 allScores <- apply(answers, 1, function(a){
-	vs <- sapply(versionOrder, function(v){
+	vs <- sapply(orders, function(v){
 		return(sum(a[order(v)]==key))
 	})
 	return((vs))
 })
 
+print(allScores)
+
+## Pick out best version and highest score
+## which.max makes a confusing object for an unclear reason
 bestScore <- apply(allScores, 2, max)
-bestVer <- apply(allScores, 2, which.max)
+bestVer <- unlist(apply(allScores, 2, which.max))
 
-scoreVersion <- data.frame(
-	idnum = as.numeric(as.character(rownames(sheets))),
-	bubble=sheets[[1]],
-	bestVer, bestScore
-)
+summary(bestScore)
+summary(bestVer)
 
-print(subset(scoreVersion, bubble<1))
-
-# Temporarily patch missing version
-scoreVersion <- within(scoreVersion, {
-	bubble[bubble<1] <- 1
+## Try to instead get a score for the bubbled version
+bubbleVersion <- pull(responses, X2)
+verScore <- sapply(1:ncol(allScores), function(i){
+	return(allScores[[bubbleVersion[[i]], i]])
 })
 
-vprob <- subset(scoreVersion, bubble != bestVer)
-print(vprob)
-print(allScores[ , rownames(vprob)])
-
-bubbleSel <- sapply(1:nrow(sheets), function(n){
-	return(allScores[[scoreVersion$bubble[[n]], n]])
-	return(c(scoreVersion$bubble[[n]], n))
-})
-
-bubbleScores <- data.frame(
-	idnum = as.numeric(as.character(rownames(sheets))),
-	score = bubbleSel
+scores <- (responses
+	%>% transmute(idnum=X1
+		, version=X2
+		, bestScore
+		, bestVer
+		, verScore
+	)
 )
 
-finalMarks <- bubbleScores
+summary(scores)
 
-write.csv(finalMarks, csvname, row.names=FALSE)
-
-# rdsave(key, answers, versionOrder, scoreVersion, finalMarks)
+# rdsave(scores)
