@@ -133,7 +133,6 @@ midterm2.office.csv:
 midterm%.office.csv: dropdir/m%disk/StudentScoresWebCT.csv Makefile
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
-
 ## Re-score here (gives us control over version errors)
 #### New scoring pipeline (old scoring pipeline is in Tests/)
 
