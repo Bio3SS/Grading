@@ -10,29 +10,44 @@ responses <- read_tsv(grep("tsv", input_files, value=TRUE)
 key <- read_csv(grep("csv", input_files, value=TRUE))
 
 answers <- as.matrix(responses[-(1:2)])
-orders <- orders[-1]
+answers <- matrix(match(answers, LETTERS), nrow=nrow(answers))
+dim(answers)
 
-allScores <- apply(answers, 1, function(a){
-	vs <- sapply(orders, function(v){
-		return(sum(a[order(v)]==key))
+versions = unique(key$Version)
+scores <- matrix(nrow=nrow(answers), ncol=length(versions))
+for (ver in versions){
+	vkey <- (key
+		%>% filter(Version==ver)
+		%>% select(-(1:2))
+		%>% as.matrix()
+	)
+	print(vkey)
+
+	## Can't figure out how to deloop this
+	scores [ ,ver] <- apply(answers, 1, function(a){
+		for(i in 1:length(a)){
+			a[[i]] <- vkey[[i, a[[i]]]]
+		}
+		return(sum(a))
 	})
-	return((vs))
-})
+}
 
-print(allScores)
+print(scores)
 
 ## Pick out best version and highest score
 ## which.max makes a confusing object for an unclear reason
-bestScore <- apply(allScores, 2, max)
-bestVer <- unlist(apply(allScores, 2, which.max))
+bestScore <- apply(scores, 1, max)
+bestVer <- unlist(apply(scores, 1, which.max))
 
 summary(bestScore)
 summary(bestVer)
 
 ## Try to instead get a score for the bubbled version
+## Look here for mismatches
 bubbleVersion <- pull(responses, X2)
-verScore <- sapply(1:ncol(allScores), function(i){
-	return(allScores[[bubbleVersion[[i]], i]])
+print(sum(bubbleVersion != bestVer))
+verScore <- sapply(1:nrow(scores), function(i){
+	return(scores[[i, bubbleVersion[[i]]]])
 })
 
 scores <- (responses
@@ -43,7 +58,6 @@ scores <- (responses
 		, verScore
 	)
 )
-
 summary(scores)
 
 # rdsave(scores)

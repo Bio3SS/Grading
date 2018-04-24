@@ -136,6 +136,8 @@ midterm%.office.csv: dropdir/m%disk/StudentScoresWebCT.csv Makefile
 
 ## Re-score here (gives us control over version errors)
 #### New scoring pipeline (old scoring pipeline is in Tests/)
+
+### scoring is just a key sheet formatted for local scoring
 %.scoring.csv: Tests/%.scantron.csv scoring.pl
 	$(PUSH)
 midterm2.scoring.csv: Tests/midterm2.scantron.csv scoring.pl
