@@ -148,6 +148,7 @@ midterm1.scorecomp.Rout: midterm1.office.csv midterm1.scores.Rout scorecomp.R
 	$(run-R)
 
 ## Patch
+### FIX: Base patch on scores, not scorecomp
 ## Need to patch IDs, then make them numeric (for robust matching with TAs)
 ## Later: pad them for Avenue/mosaic
 Sources += idpatch.csv
