@@ -148,13 +148,23 @@ midterm1.scorecomp.Rout: midterm1.office.csv midterm1.scores.Rout scorecomp.R
 	$(run-R)
 
 ## Patch
-### FIX: Base patch on scores, not scorecomp
-## Need to patch IDs, then make them numeric (for robust matching with TAs)
+## Need to patch IDs
+## then make them numeric (for robust matching with TAs)
 ## Later: pad them for Avenue/mosaic
 Sources += idpatch.csv
-final.patch.Rout:
-%.patch.Rout: %.scorecomp.Rout idpatch.csv idpatch.R
+final.patch.Rout: idpatch.R
+%.patch.Rout: %.scores.Rout idpatch.csv idpatch.R
 	$(run-R)
+
+######################################################################
+
+## Score merging
+## Read stuff from different sources into a complete table
+## Use to make final grade
+
+tests.Rout: students.Rout midterm1.patch.Rout.envir midterm2.patch.Rout.envir final.patch.Rout.envir tests.R
+
+course.Rout: midterm1.patch.Rout midterm2.patch.Rout final.patch.Rout course.R
 
 ######################################################################
 

@@ -11,8 +11,6 @@ scores <- (scores
 		, idnum, as.character(patch_idnum))
 	)
 	%>% select(-patch_idnum)
-	%>% mutate(idnum=as.numeric((idnum)))
-	%>% select(-macid)
 )
 
 # rdsave(scores)
