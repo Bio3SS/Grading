@@ -126,16 +126,18 @@ Tests/%: Tests/Makefile
 ## The scantron pipeline _does_ recognize multiple responses, and the scantron people do it right.
 ## Which means that we should, too
 
+Ignore += midterm2.responses.tsv
 midterm2.responses.tsv: dropdir/m2disk/BIOLOGY3SS323MAR2018.dlm
 	$(cat)
 
-midterm2.office.csv:
+Ignore += midterm2.office.csv
 midterm%.office.csv: dropdir/m%disk/StudentScoresWebCT.csv Makefile
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
 
 ## Re-score here (gives us control over version errors)
 #### New scoring pipeline (old scoring pipeline is in Tests/)
+Ignore += $(wildcard *.scoring.csv)
 %.scoring.csv: Tests/%.scantron.csv scoring.pl
 	$(PUSH)
 midterm2.scoring.csv: Tests/midterm2.scantron.csv scoring.pl
