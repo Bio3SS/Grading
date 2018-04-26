@@ -10,6 +10,7 @@ for (n in names(envir_list)){
 	students <- (full_join(students,
 		(envir_list[[n]]$scores
 			%>% select(idnum, bestScore)
+			%>% setNames(c("idnum", short))
 		)
 	))
 }
