@@ -21,8 +21,6 @@ include sub.mk
 
 Sources += $(wildcard *.R *.pl)
 
-## sd /home/dushoff/Dropbox/courses/3SS/2017 ##
-
 Ignore += dropdir
 dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2018
 dropdir:
@@ -69,7 +67,7 @@ students.Rout: marks.tsv dropdir/drops.csv students.R
 
 # Read the polls into a big csv without most of the useless information
 # 2018 Apr 20 (Fri) Manually changed an idnum to a macid
-# There is one perfect score with no identifiers, and two smallish orphan lines that could be identified if I wanted to bother
+
 polls.Rout: dropdir/polls.csv polls.R
 
 # Parse the big csv in some way. Tags things that couldn't be matched to Mac address with UNKNOWN
@@ -90,16 +88,10 @@ pollScorePlus.Rout: pollScore.Rout students.Rout pollScorePlus.R
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=235353
 ## import
 
-Ignore += pollScorePlus.avenue.Rout.csv
 pollScorePlus.avenue.Rout: avenueMerge.R
 pollScorePlus.avenue.Rout.csv: avenueMerge.R
-%.avenue.Rout: %.Rout students.Rout avenueMerge.R
-	$(run-R)
 
-Ignore += pollScorePlus.avenue.csv
 pollScorePlus.avenue.csv: avenueNA.pl
-%.avenue.csv: %.avenue.Rout.csv avenueNA.pl
-	$(PUSH)
 
 ######################################################################
 
@@ -121,30 +113,62 @@ Tests/%: Tests/Makefile
 
 ######################################################################
 
-## Test scoring
-## This needs to be completely redone, since the manual scoring does not recognize multiple responses
-## The scantron pipeline _does_ recognize multiple responses, and the scantron people do it right.
-## Which means that we should, too
+## Files from media office
+## Redo next time with testname_disk pathnames
 
-Ignore += midterm2.responses.tsv
-midterm2.responses.tsv: dropdir/m2disk/BIOLOGY3SS323MAR2018.dlm
-	$(cat)
+## Sometimes sheets really don't scan!
+dropdir/%.manual.tsv:
+	$(touch)
 
-Ignore += midterm2.office.csv
-midterm%.office.csv: dropdir/m%disk/StudentScoresWebCT.csv Makefile
+Ignore += *.responses.tsv
+midterm1.responses.tsv: 
+%.responses.tsv:  dropdir/%_disk/BIOLOGY*.dlm dropdir/%.manual.tsv
+	$(CAT) $(filter %.dlm %.tsv, $^) > $@
+
+Ignore += *.office.csv
+%.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
+## Scoring
 
-## Re-score here (gives us control over version errors)
-#### New scoring pipeline (old scoring pipeline is in Tests/)
 Ignore += $(wildcard *.scoring.csv)
+### scoring is just a key sheet formatted for local scoring
 %.scoring.csv: Tests/%.scantron.csv scoring.pl
 	$(PUSH)
-midterm2.scoring.csv: Tests/midterm2.scantron.csv scoring.pl
-	$(PUSH)
 
-midterm2.scores.Rout: midterm2.responses.tsv midterm2.scoring.csv scores.R
+midterm1.scores.Rout: scores.R
+midterm1.scores.Rout:  midterm1.responses.tsv midterm1.scoring.csv scores.R
+%.scores.Rout: %.responses.tsv %.scoring.csv scores.R
 	$(run-R)
+
+## Compare
+midterm1.scorecomp.Rout:
+midterm1.scorecomp.Rout: midterm1.office.csv midterm1.scores.Rout scorecomp.R
+%.scorecomp.Rout: %.office.csv %.scores.Rout scorecomp.R
+	$(run-R)
+
+## Patch
+## Need to patch IDs, then make them numeric (for robust matching with TAs)
+## Later: pad them for Avenue/mosaic
+Sources += idpatch.csv
+final.patch.Rout:
+%.patch.Rout: %.scorecomp.Rout idpatch.csv idpatch.R
+	$(run-R)
+
+######################################################################
+
+## avenueMerge
+## Still developing
+## Code that takes a whole spreadsheet to Avenue still in Tests/
+
+Ignore += *.avenue.Rout.csv
+%.avenue.Rout: %.Rout students.Rout avenueMerge.R
+	$(run-R)
+
+## avenueNA takes NA -> -. avenue treats these incorrectly as zeroes
+Ignore += *.avenue.csv
+%.avenue.csv: %.avenue.Rout.csv avenueNA.pl
+	$(PUSH)
 
 ######################################################################
 
