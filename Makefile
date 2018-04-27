@@ -187,11 +187,12 @@ course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
 ## You can download as EXCEL (upper right of roster display)
 ## and upload as CSV
 
-## downcall mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre
-## Save to csv
+## downcall dropdir/mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre
+## downcall dropdir/mosaic.csv
 
+mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
+## Upload this .csv to mosaic
 ## mosaic_grade.Rout.csv: mosaic_grade.R
-mosaic_grade.Rout: mosaic.csv course.Rout mosaic_grade.R
 
 ######################################################################
 
