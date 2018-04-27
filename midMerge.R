@@ -5,15 +5,18 @@ objects()
 
 num <- gsub("[[:alpha:].]", "", rtargetname)
 summary(sa)
+	print(sa
+		%>% setNames(sub(num, "_curr", names(.)))
+		%>% transmute(idnum, sa=sa_curr, manVer=manVer_curr)
+	)
 
-sa <- (sa
-	%>% setNames(sub(num, "_curr", names(.)))
-	%>% transmute(idnum, sa=sa_curr, manVer=manVer_curr)
-)
-
-## sa is from TAmarks; so use left to drop students dropped there
-## keep paying attention to others (do they have MSAF NAs?)
-scores <- (left_join(sa, scores)
+## Use right_join to drop students dropped from TAmarks
+## Need to track students who didn't write, and confirm MSAF NAs
+scores <- (scores 
+	%>% right_join(sa
+		%>% setNames(sub(num, "_curr", names(.)))
+		%>% transmute(idnum, sa=sa_curr, manVer=manVer_curr)
+	)
 	%>% mutate(version = ifelse(version==-1, NA, version)
 		, version = ifelse(is.na(version), manVer, version)
 	)
