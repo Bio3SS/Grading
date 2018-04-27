@@ -25,7 +25,7 @@ summary(sa)
 
 assign <- (sheet %>% 
 	transmute(idnum, macid
-		, attendance = 2*(
+		, attendance = (
 			select(sheet, contains("Tutorial ")) %>% rowMeans(na.rm=TRUE)
 		)
 	) %>% bind_cols(
@@ -37,5 +37,5 @@ summary(assign)
 
 students <- assign %>% select(idnum, macid)
 
-# rdsave(sa, assign)
+# rdsave(sa, assign, students)
 

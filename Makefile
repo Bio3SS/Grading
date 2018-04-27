@@ -41,7 +41,7 @@ dropdir/%: dropdir ;
 
 Ignore += marks.tsv
 ## Change empties to zeroes
-marks.tsv: dropdir/marks3.tsv zero.pl
+marks.tsv: dropdir/marks4.tsv zero.pl
 	$(PUSH)
 
 ## Parse out TAmarks, drop students we think have dropped
@@ -164,7 +164,8 @@ Sources += idpatch.csv
 
 ## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
 ## Check anomalies from print out; three kids wrote part of the test?? All dropped
-midterm1.merge.Rout: midterm1.patch.Rout TAmarks.Rout midMerge.R
+## midterm2.merge.Rout: midMerge.R
+midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
 	$(run-R)
 
 ######################################################################
@@ -173,9 +174,24 @@ midterm1.merge.Rout: midterm1.patch.Rout TAmarks.Rout midMerge.R
 ## Read stuff from different sources into a complete table
 ## Use to make final grade
 
-tests.Rout: TAmarks.Rout midterm1.patch.Rout.envir midterm2.patch.Rout.envir final.patch.Rout.envir tests.R
+tests.Rout: TAmarks.Rout midterm1.merge.Rout.envir midterm2.merge.Rout.envir final.patch.Rout.envir tests.R
 
-course.Rout: tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
+## course.Rout.csv: course.R
+course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
+
+######################################################################
+
+## Mosaic
+
+## Go to course through faculty center
+## You can download as EXCEL (upper right of roster display)
+## and upload as CSV
+
+## downcall mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre
+## Save to csv
+
+## mosaic_grade.Rout.csv: mosaic_grade.R
+mosaic_grade.Rout: mosaic.csv course.Rout mosaic_grade.R
 
 ######################################################################
 

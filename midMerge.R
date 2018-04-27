@@ -4,11 +4,6 @@ library(dplyr)
 objects()
 
 num <- gsub("[[:alpha:].]", "", rtargetname)
-summary(sa)
-	print(sa
-		%>% setNames(sub(num, "_curr", names(.)))
-		%>% transmute(idnum, sa=sa_curr, manVer=manVer_curr)
-	)
 
 ## Use right_join to drop students dropped from TAmarks
 ## Need to track students who didn't write, and confirm MSAF NAs
@@ -42,8 +37,10 @@ print(filter(scores, is.na(bestScore)))
 print(filter(scores, is.na(sa)))
 
 scores <- (scores 
-	%>% filter(!is.na(version))
-	%>% mutate(bestScore = bestScore+sa)
-	%>% filter(!is.na(bestScore))
+	%>% mutate(
+		bestScore = ifelse((is.na(bestScore) & sa==0), 0, bestScore)
+		, bestScore = bestScore+sa
+	)
 )
 
+print(summary(scores))
