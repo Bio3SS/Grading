@@ -39,6 +39,8 @@ dropdir/%: dropdir ;
 
 ## Could make a fun (auto-sort) version of this rule some day
 
+## downcall dropdir/marks4.tsv  ##
+marks.tsv: dropdir/marks4.tsv zero.pl
 Ignore += marks.tsv
 ## Change empties to zeroes
 marks.tsv: dropdir/marks4.tsv zero.pl
@@ -61,9 +63,9 @@ TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
 ## 	Download csv (lower right)
 
 ## To repeat:
-##		Reports / select report you want / Update reports (next to Current Run)
+##		Reports / select report you want / Update reports (next to Current Run at top)
 
-##		downcall dropdir/polls.csv ## ## ## ##
+##		downcall dropdir/polls.csv ## ## ## ## ##
 
 ## Mosaic:
 ## downcall dropdir/roster.xls
@@ -192,6 +194,9 @@ course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
 
 mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
 ## Upload this .csv to mosaic
+## Faculty center, online grading tab
+## ~/Downloads/grade_guide.pdf
+## There is no guidance about students with incomplete marks; let's see what happens
 ## mosaic_grade.Rout.csv: mosaic_grade.R
 
 ######################################################################
