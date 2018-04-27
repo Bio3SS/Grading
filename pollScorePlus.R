@@ -8,10 +8,11 @@ new <- (
 	%>% select(macid, Polls_score)
 ) 
 
-scores <- (scores
+polls <- (scores
 	%>% bind_rows(new)
 	%>% group_by(macid)
 	%>% summarise(Polls_score=sum(Polls_score))
+	%>% right_join(students)
 )
 
-# rdsave (scores)
+# rdsave (polls)

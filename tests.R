@@ -1,13 +1,11 @@
 library(dplyr)
 objects()
-names(students)
-print(names(envir_list))
-print(names(envir_list[[1]]))
-print(names(envir_list[[1]]$scores))
+
+tests <- students
 
 for (n in names(envir_list)){
 	short <- sub(".patch", "", n)
-	students <- (full_join(students,
+	tests <- (left_join(tests,
 		(envir_list[[n]]$scores
 			%>% select(idnum, bestScore)
 			%>% setNames(c("idnum", short))
@@ -15,4 +13,6 @@ for (n in names(envir_list)){
 	))
 }
 
-summary(students)
+summary(tests)
+
+# rdsave(tests)

@@ -40,10 +40,15 @@ dropdir/%: dropdir ;
 ## Could make a fun (auto-sort) version of this rule some day
 
 Ignore += marks.tsv
+## Change empties to zeroes
 marks.tsv: dropdir/marks3.tsv zero.pl
 	$(PUSH)
 
-students.Rout: marks.tsv dropdir/drops.csv students.R
+## Parse out TAmarks, drop students we think have dropped
+## Used Avenue import info; this could be improved by starting from that
+## Pull a subset of just student info
+
+TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
 
 ######################################################################
 
@@ -76,11 +81,12 @@ polls.Rout: dropdir/polls.csv polls.R
 parsePolls.Rout: polls.Rout parsePolls.R
 
 # Calculate a pollScore and combine with the extraScore made by hand
+# This is where to look for orphan lines and try to figure out if people are missing points they should get
 pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
 pollScore.Rout.csv: 
 
 # Merge to save people who repeatedly use student number
-pollScorePlus.Rout: pollScore.Rout students.Rout pollScorePlus.R
+pollScorePlus.Rout: pollScore.Rout TAmarks.Rout pollScorePlus.R
 
 ## Make an avenue file; should work with any number of fields ending in _score
 ## along with a field for macid, idnum or both
@@ -152,8 +158,13 @@ midterm1.scorecomp.Rout: midterm1.office.csv midterm1.scores.Rout scorecomp.R
 ## then make them numeric (for robust matching with TAs)
 ## Later: pad them for Avenue/mosaic
 Sources += idpatch.csv
-final.patch.Rout: idpatch.R
+## final.patch.Rout: idpatch.R
 %.patch.Rout: %.scores.Rout idpatch.csv idpatch.R
+	$(run-R)
+
+## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
+## Check anomalies from print out; three kids wrote part of the test?? All dropped
+midterm1.merge.Rout: midterm1.patch.Rout TAmarks.Rout midMerge.R
 	$(run-R)
 
 ######################################################################
@@ -162,9 +173,9 @@ final.patch.Rout: idpatch.R
 ## Read stuff from different sources into a complete table
 ## Use to make final grade
 
-tests.Rout: students.Rout midterm1.patch.Rout.envir midterm2.patch.Rout.envir final.patch.Rout.envir tests.R
+tests.Rout: TAmarks.Rout midterm1.patch.Rout.envir midterm2.patch.Rout.envir final.patch.Rout.envir tests.R
 
-course.Rout: midterm1.patch.Rout midterm2.patch.Rout final.patch.Rout course.R
+course.Rout: tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
 
 ######################################################################
 
@@ -173,7 +184,7 @@ course.Rout: midterm1.patch.Rout midterm2.patch.Rout final.patch.Rout course.R
 ## Code that takes a whole spreadsheet to Avenue still in Tests/
 
 Ignore += *.avenue.Rout.csv
-%.avenue.Rout: %.Rout students.Rout avenueMerge.R
+%.avenue.Rout: %.Rout TAmarks.Rout avenueMerge.R
 	$(run-R)
 
 ## avenueNA takes NA -> -. avenue treats these incorrectly as zeroes
