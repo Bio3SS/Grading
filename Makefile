@@ -192,12 +192,12 @@ course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
 ## downcall dropdir/mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre
 ## downcall dropdir/mosaic.csv
 
+## mosaic_grade.Rout.csv: mosaic_grade.R
 mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
 ## Upload this .csv to mosaic
 ## Faculty center, online grading tab
 ## ~/Downloads/grade_guide.pdf
 ## There is no guidance about students with incomplete marks; let's see what happens
-## mosaic_grade.Rout.csv: mosaic_grade.R
 
 ######################################################################
 
