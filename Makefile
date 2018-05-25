@@ -205,6 +205,12 @@ mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
 ## Still developing
 ## Code that takes a whole spreadsheet to Avenue still in Tests/
 
+## Put the final marking thing in a form that avenueMerge will understand
+## FRAGILE (need to check quality checks)
+final.grade.Rout: final.patch.Rout finalscore.R
+	$(run-R)
+
+## final.grade.avenue.csv: avenueMerge.R
 Ignore += *.avenue.Rout.csv
 %.avenue.Rout: %.Rout TAmarks.Rout avenueMerge.R
 	$(run-R)
