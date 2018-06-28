@@ -11,6 +11,9 @@ asntot <- c(16, 12, 9, 10)
 library(dplyr)
 library(readr)
 
+## This is wrong: need to change Missing finals to zeroes!
+## Accidentally gave a bunch of people with no finals grades in 2018
+
 course <- (students
 	%>% full_join(tests)
 	%>% full_join(assign)

@@ -125,6 +125,8 @@ Tests/%: Tests/Makefile
 ## Redo next time with testname_disk pathnames
 
 ## Sometimes sheets really don't scan!
+## Also use this for deferred finals if you don't want to bother with 
+## scanning
 dropdir/%.manual.tsv:
 	$(touch)
 
@@ -192,6 +194,11 @@ course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
 ## downcall dropdir/mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre
 ## downcall dropdir/mosaic.csv
 
+Ignore += grade.diff
+grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
+	$(diff)
+## cp ~/hybrid/3SS/Grading/mosaic_grade.Rout.csv dropdir  ##
+
 ## mosaic_grade.Rout.csv: mosaic_grade.R
 mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
 ## Upload this .csv to mosaic
@@ -223,6 +230,7 @@ Ignore += *.avenue.csv
 ######################################################################
 
 ## Older stuff, currently unsuppressing
+## I guess the analysis stuff may still be suppressed here
 
 Sources += grades.mk
 
