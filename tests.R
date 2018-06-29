@@ -18,6 +18,10 @@ for (n in names(envir_list)){
 	))
 }
 
+tests <- (tests 
+	%>% mutate(final.test = ifelse(is.na(final.test), 0, final.test))
+)
+
 summary(tests)
 
 # rdsave(tests)
