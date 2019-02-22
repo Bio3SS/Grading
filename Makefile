@@ -4,6 +4,8 @@
 # Maybe
 # Not all.time compatible (what's up?)
 
+# 2019 Feb 22 (Fri) REJECT current submodule structure
+
 ### Hooks for the editor to set the default target
 current: target
 -include target.mk
@@ -12,8 +14,17 @@ current: target
 
 # make files
 
-Sources = Makefile .ignore README.md sub.mk LICENSE.md
-include sub.mk
+Sources = Makefile README.md LICENSE.md
+ms = makestuff
+
+Sources += $(ms)
+Makefile: $(ms)/Makefile
+
+$(ms)/%.mk: $(ms)/Makefile ;
+$(ms)/Makefile:
+	git submodule update -i
+
+-include $(ms)/os.mk
 -include $(ms)/perl.def
 
 ##################################################################
@@ -104,21 +115,9 @@ pollScorePlus.avenue.csv: avenueNA.pl
 
 ######################################################################
 
-mdirs += Tests
+pardirs += Tests
 
-Tests:
-	git submodule add -b master https://github.com/Bio3SS/$@
-
-Sources += Tests
-
-Tests/Makefile: %/Makefile:
-	git submodule init $*
-	git submodule update $*
-	-cp local.mk $*/
-
-.PRECIOUS: Tests/%
-Tests/%: Tests/Makefile
-	cd Tests && $(MAKE) $*
+Ignore += $(pardirs)
 
 ######################################################################
 
