@@ -41,8 +41,14 @@ summary(bestVer)
 ## Try to instead get a score for the bubbled version
 ## Look here for mismatches
 bubbleVersion <- pull(responses, X2)
+print(table(bubbleVersion))
+
+## Um...
+bubbleVersion[bubbleVersion==44] <- 4
+
 print(sum(bubbleVersion != bestVer))
 print(sum(bubbleVersion < 0))
+
 
 verScore <- sapply(1:nrow(scores), function(i){
 	if (bubbleVersion[[i]]<0) return(0)

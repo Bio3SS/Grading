@@ -2,9 +2,9 @@
 
 # Change codes UGRD/2171/02/BIOLOGY/101187
 # Maybe
-# Not all.time compatible (what's up?)
 
 # 2019 Feb 22 (Fri) REJECT current submodule structure
+# This seems to have no cost (except a flabby history I guess)
 
 ### Hooks for the editor to set the default target
 current: target
@@ -31,10 +31,16 @@ $(ms)/Makefile:
 
 ## Content
 
+## dropdir has "disk" subdirectories, for disks, and sensitive products in the main directory
+
+## It would be fun to have a rule that does mkdir when appropriate, but we don't
+## mkdir /home/dushoff/Dropbox/courses/3SS/2019
+## /bin/cp -r /media/dushoff/*/2* dropdir/midterm1_disk/
+
 Sources += $(wildcard *.R *.pl)
 
 Ignore += dropdir
-dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2018
+dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2019
 dropdir:
 	$(linkdirname)
 dropdir/%: dropdir ;
@@ -122,38 +128,43 @@ Ignore += $(pardirs)
 ######################################################################
 
 ## Files from media office
-## Redo next time with testname_disk pathnames
+Sources += media.md
 
 ## Sometimes sheets really don't scan!
+## So we need to be able to add manual rows to the .tsv file
 ## Also use this for deferred finals if you don't want to bother with 
 ## scanning
 dropdir/%.manual.tsv:
 	$(touch)
 
+## Student itemized responses
+## Script reads manual version first, ignores repeats
+## Necessitated by Daniel Park!
 Ignore += *.responses.tsv
-midterm1.responses.tsv: 
-%.responses.tsv:  dropdir/%_disk/BIOLOGY*.dlm dropdir/%.manual.tsv
-	$(CAT) $(filter %.dlm %.tsv, $^) > $@
+## midterm1.responses.tsv: rmerge.pl
+%.responses.tsv:  dropdir/%.manual.tsv dropdir/%_disk/BIOLOGY*.dlm rmerge.pl
+	$(PUSH)
 
+## Scantron-office scores
 Ignore += *.office.csv
+## midterm1.office.csv: 
 %.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
-## Scoring
-
+## Our scores
 Ignore += $(wildcard *.scoring.csv)
-### scoring is just a key sheet formatted for local scoring
+### Formatted key sheet (made from scantron.csv)
+## midterm1.scoring.csv:
 %.scoring.csv: Tests/%.scantron.csv scoring.pl
 	$(PUSH)
 
-midterm1.scores.Rout: scores.R
-midterm1.scores.Rout:  midterm1.responses.tsv midterm1.scoring.csv scores.R
+## Score the students
+## midterm1.scores.Rout:  midterm1.responses.tsv midterm1.scoring.csv scores.R
 %.scores.Rout: %.responses.tsv %.scoring.csv scores.R
 	$(run-R)
 
 ## Compare
-midterm1.scorecomp.Rout:
-midterm1.scorecomp.Rout: midterm1.office.csv midterm1.scores.Rout scorecomp.R
+## midterm1.scorecomp.Rout: midterm1.office.csv midterm1.scores.Rout scorecomp.R
 %.scorecomp.Rout: %.office.csv %.scores.Rout scorecomp.R
 	$(run-R)
 
@@ -168,7 +179,7 @@ Sources += idpatch.csv
 
 ## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
 ## Check anomalies from print out; three kids wrote part of the test?? All dropped
-## midterm2.merge.Rout: midMerge.R
+## midterm1.merge.Rout: midMerge.R
 midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
 	$(run-R)
 
