@@ -57,11 +57,10 @@ dropdir/%: dropdir ;
 
 ## Could make a fun (auto-sort) version of this rule some day
 
-## downcall dropdir/marks4.tsv  ##
-marks.tsv: dropdir/marks4.tsv zero.pl
+## Import TA marks (manual) and change empties to zeroes
+## downcall dropdir/marks1.tsv  ##
 Ignore += marks.tsv
-## Change empties to zeroes
-marks.tsv: dropdir/marks4.tsv zero.pl
+marks.tsv: dropdir/marks1.tsv zero.pl
 	$(PUSH)
 
 ## Parse out TAmarks, drop students we think have dropped
@@ -125,10 +124,16 @@ pardirs += Tests
 
 Ignore += $(pardirs)
 
-######################################################################
+## Chaining (works now? 2019 Feb 23 (Sat))
+Tests/%: Tests
+hotdirs += $(pardirs)
 
 ## Files from media office
 Sources += media.md
+
+######################################################################
+
+## Pipeline to mark and validate a set of scantrons
 
 ## Sometimes sheets really don't scan!
 ## So we need to be able to add manual rows to the .tsv file
@@ -142,7 +147,7 @@ dropdir/%.manual.tsv:
 ## Necessitated by Daniel Park!
 Ignore += *.responses.tsv
 ## midterm1.responses.tsv: rmerge.pl
-%.responses.tsv:  dropdir/%.manual.tsv dropdir/%_disk/BIOLOGY*.dlm rmerge.pl
+%.responses.tsv: dropdir/%.manual.tsv dropdir/%_disk/BIOLOGY*.dlm rmerge.pl
 	$(PUSH)
 
 ## Scantron-office scores
@@ -168,8 +173,11 @@ Ignore += $(wildcard *.scoring.csv)
 %.scorecomp.Rout: %.office.csv %.scores.Rout scorecomp.R
 	$(run-R)
 
-## Patch
-## Need to patch IDs
+######################################################################
+
+## Merging; not clear how this has evolved across a semester
+
+## Patch IDs if necessary, 
 ## then make them numeric (for robust matching with TAs)
 ## Later: pad them for Avenue/mosaic
 Sources += idpatch.csv
@@ -250,3 +258,4 @@ Sources += grades.mk
 -include $(ms)/git.mk
 -include $(ms)/visual.mk
 -include $(ms)/wrapR.mk
+-include $(ms)/hotcold.mk
