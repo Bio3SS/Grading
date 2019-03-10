@@ -12,12 +12,13 @@ sheet <- (read_tsv(input_files[[1]])
 	))
 )
 
+## Name	macid	idnum	Assignment 1	Assignment 2	Midterm 1 Mark	Midterm 1 Version	Assignment 3	Midterm 2 Mark	Midterm 2 Version	Assignment 4
 ## Dropped some Avenue-ish stuff. Can be found in avenueMerge, and maybe in the old (Tests/) version of this file
 
 sa <- (sheet 
 	%>% transmute(idnum=idnum, macid=macid
-		, sa1=`Exam 1 SA`, manVer1 = `Exam 1 Version`
-		, sa2=`Exam 2 SA`, manVer2 = `Exam 2 Version`
+		, sa1=`Midterm 1 Mark`, manVer1 = `Midterm 1 Version`
+		, sa2=`Midterm 2 Mark`, manVer2 = `Midterm 2 Version`
 	)
 )
 

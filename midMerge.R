@@ -1,16 +1,15 @@
 library(readr)
 library(dplyr)
 
-objects()
-
 num <- gsub("[[:alpha:].]", "", rtargetname)
 
 ## Use right_join to drop students dropped from TAmarks
 ## Need to track students who didn't write, and confirm MSAF NAs
 scores <- (scores 
+	%>% mutate (idnum = as.numeric(idnum))
 	%>% right_join(sa
 		%>% setNames(sub(num, "_curr", names(.)))
-		%>% transmute(idnum, sa=sa_curr, manVer=manVer_curr)
+		%>% transmute(idnum=as.numeric(idnum), sa=sa_curr, manVer=manVer_curr)
 	)
 	%>% mutate(version = ifelse(version==-1, NA, version)
 		, version = ifelse(is.na(version), manVer, version)

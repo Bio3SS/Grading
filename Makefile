@@ -50,23 +50,20 @@ dropdir/%: dropdir ;
 ## Spreadsheets with TA marks from HWs and SAs
 ## How did we make original spreadsheet from Avenue?
 
-## To do:
-##   move calc-y stuff from Tests to here
-
-## We keep track with named versions, so that we don't have to git the spreadsheets
-
-## Could make a fun (auto-sort) version of this rule some day
-
 ## Import TA marks (manual) and change empties to zeroes
-## downcall dropdir/marks1.tsv  ##
+## Use named versions of marks.tsv (no revision control in Dropbox)
+## downcall dropdir/marks2.tsv  ##
 Ignore += marks.tsv
-marks.tsv: dropdir/marks1.tsv zero.pl
+marks.tsv: dropdir/marks2.tsv zero.pl
 	$(PUSH)
 
 ## Parse out TAmarks, drop students we think have dropped
 ## Used Avenue import info; this could be improved by starting from that
 ## Pull a subset of just student info
 
+Sources += nodrops.csv
+dropdir/drops.csv: 
+	$(CP) nodrops.csv $@
 TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
 
 ######################################################################
@@ -82,7 +79,7 @@ TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
 ## To repeat:
 ##		Reports / select report you want / Update reports (next to Current Run at top)
 
-##		downcall dropdir/polls.csv ## ## ## ## ##
+##	downcall dropdir/polls.csv ## ## ## ## ##
 
 ## Mosaic:
 ## downcall dropdir/roster.xls
@@ -159,6 +156,7 @@ Ignore += *.office.csv
 ## Our scores
 Ignore += $(wildcard *.scoring.csv)
 ### Formatted key sheet (made from scantron.csv)
+## make Tests/midterm1.scantron.csv ## to stop making forever
 ## midterm1.scoring.csv:
 %.scoring.csv: Tests/%.scantron.csv scoring.pl
 	$(PUSH)
@@ -175,55 +173,22 @@ Ignore += $(wildcard *.scoring.csv)
 
 ######################################################################
 
-## Merging; not clear how this has evolved across a semester
-
+## Merging test with scoresheet
 ## Patch IDs if necessary, 
 ## then make them numeric (for robust matching with TAs)
 ## Later: pad them for Avenue/mosaic
 Sources += idpatch.csv
-## final.patch.Rout: idpatch.R
 %.patch.Rout: %.scores.Rout idpatch.csv idpatch.R
 	$(run-R)
+## midterm1.patch.Rout: idpatch.R
 
 ## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
+## Pipeline above here seems to jump in terms of what R thinks idnum is
+## Set numeric to merge here. Pad somewhere downstream
 ## Check anomalies from print out; three kids wrote part of the test?? All dropped
 ## midterm1.merge.Rout: midMerge.R
 midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
 	$(run-R)
-
-######################################################################
-
-## Score merging
-## Read stuff from different sources into a complete table
-## Use to make final grade
-
-tests.Rout: TAmarks.Rout midterm1.merge.Rout.envir midterm2.merge.Rout.envir final.patch.Rout.envir tests.R
-
-## course.Rout.csv: course.R
-course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
-
-######################################################################
-
-## Mosaic
-
-## Go to course through faculty center
-## You can download as EXCEL (upper right of roster display)
-## and upload as CSV
-
-## downcall dropdir/mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre
-## downcall dropdir/mosaic.csv
-
-Ignore += grade.diff
-grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
-	$(diff)
-## cp ~/hybrid/3SS/Grading/mosaic_grade.Rout.csv dropdir  ##
-
-## mosaic_grade.Rout.csv: mosaic_grade.R
-mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
-## Upload this .csv to mosaic
-## Faculty center, online grading tab
-## ~/Downloads/grade_guide.pdf
-## There is no guidance about students with incomplete marks; let's see what happens
 
 ######################################################################
 
@@ -233,7 +198,9 @@ mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
 
 ## Put the final marking thing in a form that avenueMerge will understand
 ## FRAGILE (need to check quality checks)
-final.grade.Rout: final.patch.Rout finalscore.R
+## midterm1.grade.Rout: midterm1.merge.Rout finalscore.R
+## midterm1.grade.avenue.csv:
+%.grade.Rout: %.patch.Rout finalscore.R
 	$(run-R)
 
 ## final.grade.avenue.csv: avenueMerge.R
@@ -248,8 +215,39 @@ Ignore += *.avenue.csv
 
 ######################################################################
 
+## Combined course grading
+## Score merging
+## Read stuff from different sources into a complete table
+
+tests.Rout: TAmarks.Rout midterm1.merge.Rout.envir midterm2.merge.Rout.envir final.patch.Rout.envir tests.R
+
+## course.Rout.csv: course.R
+course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
+
+## Mosaic
+
+## Go to course through faculty center
+## You can download as EXCEL (upper right of roster display)
+## and upload as CSV
+
+## downcall dropdir/mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre
+## downcall dropdir/mosaic.csv
+
+Ignore += grade.diff
+grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
+	$(diff)
+
+## mosaic_grade.Rout.csv: mosaic_grade.R
+mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
+## Upload this .csv to mosaic
+## Faculty center, online grading tab
+## ~/Downloads/grade_guide.pdf
+## There is no guidance about students with incomplete marks; let's see what happens
+
+######################################################################
+
 ## Older stuff, currently unsuppressing
-## I guess the analysis stuff may still be suppressed here
+## Analysis stuff may still be suppressed here
 
 Sources += grades.mk
 
