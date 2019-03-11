@@ -47,6 +47,11 @@ dropdir/%: dropdir ;
 
 ######################################################################
 
+## merge notes
+## I mostly merge on idnum. Strategy is to make it numeric as often 
+## as seems necessary while merging. Then pad it right before avenue
+## or mosaic. Current code in avenueMerge.R
+
 ## Spreadsheets with TA marks from HWs and SAs
 ## How did we make original spreadsheet from Avenue?
 
@@ -107,7 +112,7 @@ pollScorePlus.Rout: pollScore.Rout TAmarks.Rout pollScorePlus.R
 ## Make an avenue file; should work with any number of fields ending in _score
 ## along with a field for macid, idnum or both
 
-## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=235353
+## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=273939
 ## import
 
 pollScorePlus.avenue.Rout: avenueMerge.R
@@ -183,7 +188,6 @@ Sources += idpatch.csv
 ## midterm1.patch.Rout: idpatch.R
 
 ## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
-## Pipeline above here seems to jump in terms of what R thinks idnum is
 ## Set numeric to merge here. Pad somewhere downstream
 ## Check anomalies from print out; three kids wrote part of the test?? All dropped
 ## midterm1.merge.Rout: midMerge.R
@@ -200,7 +204,7 @@ midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
 ## FRAGILE (need to check quality checks)
 ## midterm1.grade.Rout: midterm1.merge.Rout finalscore.R
 ## midterm1.grade.avenue.csv:
-%.grade.Rout: %.patch.Rout finalscore.R
+%.grade.Rout: %.merge.Rout finalscore.R
 	$(run-R)
 
 ## final.grade.avenue.csv: avenueMerge.R

@@ -6,10 +6,6 @@ sheet <- (read_tsv(input_files[[1]])
 		read_csv(input_files[[2]])
 		%>% mutate(idnum=as.numeric(idnum))
 	)
-	%>% mutate(idnum=(
-			sprintf("%9d", idnum) 
-			%>% gsub(pattern=" ", replacement="0")
-	))
 )
 
 ## Name	macid	idnum	Assignment 1	Assignment 2	Midterm 1 Mark	Midterm 1 Version	Assignment 3	Midterm 2 Mark	Midterm 2 Version	Assignment 4

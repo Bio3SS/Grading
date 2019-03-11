@@ -6,4 +6,4 @@ scores <- (scores
 	%>% select(idnum=idnum, midterm1_score=bestScore)
 )
 
-## summary(scores)
+summary(scores)
