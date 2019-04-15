@@ -57,9 +57,9 @@ dropdir/%: dropdir ;
 
 ## Import TA marks (manual) and change empties to zeroes
 ## Use named versions of marks.tsv (no revision control in Dropbox)
-## downcall dropdir/marks2.tsv  ##
+## downcall dropdir/marks3.tsv  ##
 Ignore += marks.tsv
-marks.tsv: dropdir/marks2.tsv zero.pl
+marks.tsv: dropdir/marks3.tsv zero.pl ##
 	$(PUSH)
 
 ## Parse out TAmarks, drop students we think have dropped
@@ -198,7 +198,7 @@ Sources += idpatch.csv
 ## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
 ## Set numeric to merge here. Pad somewhere downstream
 ## Check anomalies from print out; three kids wrote part of the test?? All dropped
-## midterm1.merge.Rout: midMerge.R
+## midterm2.merge.Rout: midMerge.R
 midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
 	$(run-R)
 
@@ -210,8 +210,8 @@ midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
 
 ## Put the final marking thing in a form that avenueMerge will understand
 ## FRAGILE (need to check quality checks)
-## midterm1.grade.Rout: midterm1.merge.Rout finalscore.R
-## midterm1.grade.avenue.csv:
+## midterm2.grade.Rout: midterm1.merge.Rout finalscore.R
+## midterm2.grade.avenue.csv:
 %.grade.Rout: %.merge.Rout finalscore.R
 	$(run-R)
 
