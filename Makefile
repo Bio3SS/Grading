@@ -34,8 +34,8 @@ $(ms)/Makefile:
 ## dropdir has "disk" subdirectories, for disks, and sensitive products in the main directory
 
 ## It would be fun to have a rule that does mkdir when appropriate, but we don't
-## mkdir /home/dushoff/Dropbox/courses/3SS/2019/midterm2_disk ##
-## /bin/cp -r /media/dushoff/*/2* dropdir/midterm2_disk/
+## mkdir /home/dushoff/Dropbox/courses/3SS/2019/final_disk ##
+## /bin/cp -r /media/dushoff/*/*/* dropdir/final_disk/ ##
 
 Sources += $(wildcard *.R *.pl)
 
@@ -57,9 +57,10 @@ dropdir/%: dropdir ;
 
 ## Import TA marks (manual) and change empties to zeroes
 ## Use named versions of marks.tsv (no revision control in Dropbox)
-## downcall dropdir/marks3.tsv  ##
+## Need to update in Apr 2019
+## downcall dropdir/marks4.tsv  ##
 Ignore += marks.tsv
-marks.tsv: dropdir/marks3.tsv zero.pl ##
+marks.tsv: dropdir/marks4.tsv zero.pl ##
 	$(PUSH)
 
 ## Parse out TAmarks, drop students we think have dropped
@@ -107,10 +108,13 @@ pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
 pollScore.Rout.csv: 
 
 # Merge to save people who repeatedly use student number
+## Why not working? 2019 Apr 29 (Mon)
+## Patched, but not doing anything. Because people know what macid is now? remove?
 pollScorePlus.Rout: pollScore.Rout TAmarks.Rout pollScorePlus.R
 
-## Make an avenue file; should work with any number of fields ending in _score
+## Make an avenue file; should work with any number of fields ending in _score (in a variable called scores)
 ## along with a field for macid, idnum or both
+## No, scores should have only macid, I guess
 
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=273939
 ## import
@@ -197,7 +201,8 @@ Sources += idpatch.csv
 
 ## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
 ## Set numeric to merge here. Pad somewhere downstream
-## Check anomalies from print out; three kids wrote part of the test?? All dropped
+## Check anomalies from print out
+## Empty scores will be set to 0. Add MSAF to sheet (as NA?) 
 ## midterm2.merge.Rout: midMerge.R
 midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
 	$(run-R)
@@ -210,7 +215,7 @@ midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
 
 ## Put the final marking thing in a form that avenueMerge will understand
 ## FRAGILE (need to check quality checks)
-## midterm2.grade.Rout: midterm1.merge.Rout finalscore.R
+## midterm2.grade.Rout: midterm2.merge.Rout finalscore.R
 ## midterm2.grade.avenue.csv:
 %.grade.Rout: %.merge.Rout finalscore.R
 	$(run-R)
@@ -233,6 +238,7 @@ Ignore += *.avenue.csv
 
 tests.Rout: TAmarks.Rout midterm1.merge.Rout.envir midterm2.merge.Rout.envir final.patch.Rout.envir tests.R
 
+## Check weightings, number of assignments, components, etc.
 ## course.Rout.csv: course.R
 course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
 

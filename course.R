@@ -1,8 +1,10 @@
 
-downgrade <- 1000 ## 0 for no downgrade (power = number completed)
-offset <- 0 ## increase to round up instead of down
+## 0 for no downgrade (power = number completed)
+## 1000 for no balance
+downgrade <- 0
+offset <- 0.5 ## 0 to round down
 testwt <- c(25, 25, 40)
-asntot <- c(16, 12, 9, 10)
+asntot <- c(16, 12, 10)
 
 ## it would be nice to get these back... why could Marvin upload negatives?
 ## avenueMissing <- -95
@@ -17,7 +19,7 @@ library(readr)
 course <- (students
 	%>% full_join(tests)
 	%>% full_join(assign)
-	%>% full_join(polls)
+	%>% full_join(scores) ## Poll scores come directly so use this name
 
 	%>% rowwise()
 	%>% mutate(testAve = powerAve(
@@ -26,18 +28,18 @@ course <- (students
 	))
 
 	%>% mutate(asnAve = powerAve(
-		scores=c(Assignment.1, Assignment.2, Assignment.3, Assignment.4)
+		## scores=c(Assignment.1, Assignment.2, Assignment.3, Assignment.4)
+		scores=c(Assignment.1, Assignment.2, Assignment.3)
 		, dens=asntot, weights=1, downgrade=downgrade
 	))
 
 	%>% mutate(
 		Polls_score = naZero(Polls_score)
-		, attendance = naZero(attendance) 
 	)
 
 	%>% mutate(
-		courseGrade = 90*testAve + 8*asnAve + 2*attendance + Polls_score
-		# , courseGrade = floor(courseGrade+offset)
+		courseGrade = 90*testAve + 10*asnAve + Polls_score
+		, courseGrade = floor(courseGrade+offset)
 	)
 )
 
@@ -45,7 +47,7 @@ summary(course)
 
 (course
 	%>% transmute(macid, idnum
-		, attendance=round(attendance, 3)
+		## , attendance=round(attendance, 3)
 		, Polls_score=round(Polls_score, 3)
 		, testAve=round(testAve, 3)
 		, asnAve=round(asnAve, 3)

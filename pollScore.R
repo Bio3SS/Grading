@@ -23,9 +23,10 @@ sf <- (sf
 )
 
 ef <- read.table(input_files[[1]], header=TRUE)
-df <- merge(sf, ef, all.x=TRUE)
+df <- full_join(sf, ef)
 df <- within(df, {
 	extra[is.na(extra)] <- 0
+	score[is.na(score)] <- 0
 	score <- score+extra
 	score <- 2*pmin(1, score/(needMax*weight))
 	score <- round(100*score)/100
