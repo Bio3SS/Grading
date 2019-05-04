@@ -85,7 +85,7 @@ TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
 ## To repeat:
 ##		Reports / select report you want / Update reports (next to Current Run at top)
 
-##	downcall dropdir/polls.csv ## ## ## ## ##
+##	downcall dropdir/polls.csv ##
 
 ## Mosaic:
 ## downcall dropdir/roster.xls
@@ -93,7 +93,6 @@ TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
 ######################################################################
 
 # Read the polls into a big csv without most of the useless information
-# 2018 Apr 20 (Fri) Manually changed an idnum to a macid
 
 polls.Rout: dropdir/polls.csv polls.R
 
@@ -103,9 +102,13 @@ polls.Rout: dropdir/polls.csv polls.R
 parsePolls.Rout: polls.Rout parsePolls.R
 
 # Calculate a pollScore and combine with the extraScore made by hand
-# This is where to look for orphan lines and try to figure out if people are missing points they should get
+# The csv is where to look for orphan lines and try to figure out if people are missing points they should get
 pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
 pollScore.Rout.csv: 
+
+# Ask people to answer a fake question with "macid" in it
+# in all the ways that they answered the polls
+# Then save people manually in column 3 of .ssv
 
 # Merge to save people who repeatedly use student number
 ## Why not working? 2019 Apr 29 (Mon)
@@ -114,7 +117,7 @@ pollScorePlus.Rout: pollScore.Rout TAmarks.Rout pollScorePlus.R
 
 ## Make an avenue file; should work with any number of fields ending in _score (in a variable called scores)
 ## along with a field for macid, idnum or both
-## No, scores should have only macid, I guess
+## No, scores for input should have only macid, I guess
 
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=273939
 ## import
