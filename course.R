@@ -22,10 +22,12 @@ course <- (students
 	%>% full_join(scores) ## Poll scores come directly so use this name
 
 	%>% rowwise()
-	%>% mutate(testAve = powerAve(
-		scores=c(midterm1.test, midterm2.test, final.test)
-		, dens=testwt, weights=testwt, downgrade=downgrade
-	))
+	%>% mutate(
+		testAve = powerAve(
+			scores=c(midterm1.test, midterm2.test, final.test)
+			, dens=testwt, weights=testwt, downgrade=downgrade
+		)
+	)
 
 	%>% mutate(asnAve = powerAve(
 		## scores=c(Assignment.1, Assignment.2, Assignment.3, Assignment.4)
