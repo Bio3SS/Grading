@@ -18,9 +18,10 @@ Sources = Makefile README.md LICENSE.md
 ms = makestuff
 
 Sources += $(ms)
-Makefile: $(ms)/Makefile
 
-$(ms)/%.mk: $(ms)/Makefile ;
+$(ms)/%.mk: $(ms)/Makefile 
+	touch $@
+
 $(ms)/Makefile:
 	git submodule update -i
 
@@ -43,7 +44,8 @@ Ignore += dropdir
 dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2019
 dropdir:
 	$(linkdirname)
-dropdir/%: dropdir ;
+dropdir/%: 
+	$(MAKE) dropdir
 
 ######################################################################
 
@@ -134,7 +136,12 @@ pardirs += Tests
 Ignore += $(pardirs)
 
 ## Chaining (works now? 2019 Feb 23 (Sat))
-Tests/%: Tests
+## Problem: $(MAKE) can lead to looping
+## Dependencies can lead to make never being finished
+## This works fine if Tests exists
+## A broader pardirs rule might just work!
+Tests/%:
+	$(MAKE) Tests
 hotdirs += $(pardirs)
 
 ## Files from media office
