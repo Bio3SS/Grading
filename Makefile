@@ -254,9 +254,6 @@ course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
 ## downcall dropdir/mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre
 ## downcall dropdir/mosaic.csv
 
-Ignore += grade.diff
-grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
-	$(diff)
 
 ## mosaic_grade.Rout.csv: mosaic_grade.R
 mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
@@ -264,6 +261,12 @@ mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
 ## Faculty center, online grading tab
 ## ~/Downloads/grade_guide.pdf
 ## There is no guidance about students with incomplete marks; let's see what happens
+
+## Copy grades to dropdir for diffing:
+#### cp mosaic_grade.Rout.csv dropdir
+Ignore += grade.diff
+grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
+	$(diff)
 
 ######################################################################
 
