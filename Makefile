@@ -58,9 +58,9 @@ dropdir/%: dropdir ;
 ## Import TA marks (manual) and change empties to zeroes
 ## Use named versions of marks.tsv (no revision control in Dropbox)
 ## Need to update in Apr 2019
-## downcall dropdir/marks4.tsv  ##
+## downcall dropdir/marks5.tsv  ##
 Ignore += marks.tsv
-marks.tsv: dropdir/marks4.tsv zero.pl ##
+marks.tsv: dropdir/marks5.tsv zero.pl ##
 	$(PUSH)
 
 ## Parse out TAmarks, drop students we think have dropped
@@ -104,6 +104,7 @@ parsePolls.Rout: polls.Rout parsePolls.R
 
 # Calculate a pollScore and combine with the extraScore made by hand
 # This is where to look for orphan lines and try to figure out if people are missing points they should get
+# Then loop back to the manual part of the .ssv
 pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
 pollScore.Rout.csv: 
 
@@ -248,7 +249,7 @@ course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
 ## You can download as EXCEL (upper right of roster display)
 ## and upload as CSV
 
-## downcall dropdir/mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre
+## downcall dropdir/mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre ##
 ## downcall dropdir/mosaic.csv
 
 Ignore += grade.diff
@@ -256,6 +257,7 @@ grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
 	$(diff)
 
 ## mosaic_grade.Rout.csv: mosaic_grade.R
+## Check class number 
 mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
 ## Upload this .csv to mosaic
 ## Faculty center, online grading tab

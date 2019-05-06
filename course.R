@@ -42,6 +42,7 @@ course <- (students
 	%>% mutate(
 		courseGrade = 90*testAve + 10*asnAve + Polls_score
 		, courseGrade = floor(courseGrade+offset)
+		, idnum=sprintf("%09d", as.numeric(idnum)) 
 	)
 )
 
@@ -49,7 +50,6 @@ summary(course)
 
 (course
 	%>% transmute(macid, idnum
-		## , attendance=round(attendance, 3)
 		, Polls_score=round(Polls_score, 3)
 		, testAve=round(testAve, 3)
 		, asnAve=round(asnAve, 3)
