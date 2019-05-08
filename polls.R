@@ -27,5 +27,4 @@ res <- numResp>1
 rec <- rec[res]
 report <- report[res]
 
-
 # rdsave(id, report, rec)

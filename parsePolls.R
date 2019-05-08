@@ -3,12 +3,13 @@
 
 fq <-(which(grepl("macid", names(report))))
 if(length(fq)==1){
-	id$ques <- report[[fq]]
+	id$ques <- tolower(report[[fq]])
 	report <- report[-fq]
 	fqgroup <- fq:(fq+2)
 	# rec <- rec[-fqgroup]
 	rec <- rec[-fq]
 } else {id$ques <- "UNKNOWN"}
+
 
 ## What does the id frame look like?
 print(summary(id))

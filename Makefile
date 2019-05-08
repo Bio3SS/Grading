@@ -18,9 +18,10 @@ Sources = Makefile README.md LICENSE.md
 ms = makestuff
 
 Sources += $(ms)
-Makefile: $(ms)/Makefile
 
-$(ms)/%.mk: $(ms)/Makefile ;
+$(ms)/%.mk: $(ms)/Makefile 
+	touch $@
+
 $(ms)/Makefile:
 	git submodule update -i
 
@@ -43,7 +44,8 @@ Ignore += dropdir
 dropdir: dir = /home/dushoff/Dropbox/courses/3SS/2019
 dropdir:
 	$(linkdirname)
-dropdir/%: dropdir ;
+dropdir/%: 
+	$(MAKE) dropdir
 
 ######################################################################
 
@@ -85,15 +87,11 @@ TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
 ## To repeat:
 ##		Reports / select report you want / Update reports (next to Current Run at top)
 
-##	downcall dropdir/polls.csv ## ## ## ## ##
-
-## Mosaic:
-## downcall dropdir/roster.xls
+##	downcall dropdir/polls.csv ##
 
 ######################################################################
 
 # Read the polls into a big csv without most of the useless information
-# 2018 Apr 20 (Fri) Manually changed an idnum to a macid
 
 polls.Rout: dropdir/polls.csv polls.R
 
@@ -103,10 +101,14 @@ polls.Rout: dropdir/polls.csv polls.R
 parsePolls.Rout: polls.Rout parsePolls.R
 
 # Calculate a pollScore and combine with the extraScore made by hand
-# This is where to look for orphan lines and try to figure out if people are missing points they should get
+# The csv is where to look for orphan lines and try to figure out if people are missing points they should get
 # Then loop back to the manual part of the .ssv
 pollScore.Rout: dropdir/extraPolls.ssv parsePolls.Rout pollScore.R
 pollScore.Rout.csv: 
+
+# Ask people to answer a fake question with "macid" in it
+# in all the ways that they answered the polls
+# Then save people manually in column 3 of .ssv
 
 # Merge to save people who repeatedly use student number
 ## Why not working? 2019 Apr 29 (Mon)
@@ -115,7 +117,7 @@ pollScorePlus.Rout: pollScore.Rout TAmarks.Rout pollScorePlus.R
 
 ## Make an avenue file; should work with any number of fields ending in _score (in a variable called scores)
 ## along with a field for macid, idnum or both
-## No, scores should have only macid, I guess
+## No, scores for input should have only macid, I guess
 
 ## https://avenue.cllmcmaster.ca/d2l/lms/grades/admin/enter/user_list_view.d2l?ou=273939
 ## import
@@ -132,7 +134,12 @@ pardirs += Tests
 Ignore += $(pardirs)
 
 ## Chaining (works now? 2019 Feb 23 (Sat))
-Tests/%: Tests
+## Problem: $(MAKE) can lead to looping
+## Dependencies can lead to make never being finished
+## This works fine if Tests exists
+## A broader pardirs rule might just work!
+Tests/%:
+	$(MAKE) Tests
 hotdirs += $(pardirs)
 
 ## Files from media office
@@ -252,17 +259,20 @@ course.Rout: gradeFuns.Rout tests.Rout pollScorePlus.Rout TAmarks.Rout course.R
 ## downcall dropdir/mosaic.xls ## Insanity! This is an html file that cannot be read by R AFAICT, even though it opens fine in Libre ##
 ## downcall dropdir/mosaic.csv
 
-Ignore += grade.diff
-grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
-	$(diff)
-
-## mosaic_grade.Rout.csv: mosaic_grade.R
 ## Check class number 
+## Check dropCandidates in Rout
+## mosaic_grade.Rout.csv: mosaic_grade.R
 mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
 ## Upload this .csv to mosaic
 ## Faculty center, online grading tab
 ## ~/Downloads/grade_guide.pdf
 ## There is no guidance about students with incomplete marks; let's see what happens
+
+## Copy grades to dropdir for diffing:
+#### cp mosaic_grade.Rout.csv dropdir
+Ignore += grade.diff
+grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
+	$(diff)
 
 ######################################################################
 

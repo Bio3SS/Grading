@@ -15,3 +15,9 @@ roster <- (roster
 ) %>% write_csv(csvname, col_names=FALSE)
 
 summary(roster)
+
+dropCandidates <- roster %>% filter(is.na(mark))
+
+(roster
+	%>% filter(!is.na(mark))
+) %>% write_csv(csvname, col_names=FALSE)
