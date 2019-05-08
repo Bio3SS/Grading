@@ -183,14 +183,13 @@ Ignore += $(wildcard *.scoring.csv)
 
 ## Score the students
 ## How many have weird bubble versions? How many have best ≠ bubble?
-## midterm1.scores.Rout:  midterm1.responses.tsv midterm1.scoring.csv scores.R
 ## midterm2.scores.Rout:  midterm2.responses.tsv midterm2.scoring.csv scores.R
+## final.scores.Rout:  final.responses.tsv final.scoring.csv scores.R
 %.scores.Rout: %.responses.tsv %.scoring.csv scores.R
 	$(run-R)
 
 ## Compare
-## Now fewer people have score ≠ best score. Don't worry?
-## midterm1.scorecomp.Rout: midterm1.office.csv midterm1.scores.Rout scorecomp.R
+## final.scorecomp.Rout: final.office.csv final.scores.Rout scorecomp.R
 ## midterm2.scorecomp.Rout: midterm2.office.csv midterm2.scores.Rout scorecomp.R
 %.scorecomp.Rout: %.office.csv %.scores.Rout scorecomp.R
 	$(run-R)
@@ -222,18 +221,23 @@ midterm%.merge.Rout: midterm%.patch.Rout TAmarks.Rout midMerge.R
 ## Code that takes a whole spreadsheet to Avenue still in Tests/
 
 ## Put the final marking thing in a form that avenueMerge will understand
+## midterms but not final merged with TAmarks for above this step
 ## FRAGILE (need to check quality checks)
-## midterm2.grade.Rout: midterm2.merge.Rout finalscore.R
 ## midterm2.grade.avenue.csv:
-%.grade.Rout: %.merge.Rout finalscore.R
+midterm%.grade.Rout: midterm%.merge.Rout finalscore.R
 	$(run-R)
 
-## final.grade.avenue.csv: avenueMerge.R
+## Edit finalscore to match names for Avenue output
+final.grade.Rout: final.patch.Rout finalscore.R
+	$(run-R)
+
+## final.grade.avenue.Rout: avenueMerge.R
 Ignore += *.avenue.Rout.csv
 %.avenue.Rout: %.Rout TAmarks.Rout avenueMerge.R
 	$(run-R)
 
 ## avenueNA takes NA -> -. avenue treats these incorrectly as zeroes
+## final.grade.avenue.csv: avenueNA.pl
 Ignore += *.avenue.csv
 %.avenue.csv: %.avenue.Rout.csv avenueNA.pl
 	$(PUSH)
