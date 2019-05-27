@@ -84,7 +84,7 @@ TAmarks.Rout: marks.tsv dropdir/drops.csv TAmarks.R
 ## To repeat:
 ##		Reports / select report you want / Update reports (next to Current Run at top)
 
-##	downcall dropdir/polls.csv ## ## ## ## ##
+##	downcall dropdir/polls.csv ##
 
 ## Mosaic:
 ## downcall dropdir/roster.xls
@@ -151,35 +151,34 @@ dropdir/%.manual.tsv:
 ## Script reads manual version first, ignores repeats
 ## Necessitated by Daniel Park!
 Ignore += *.responses.tsv
-## midterm2.responses.tsv: rmerge.pl
+## final.responses.tsv: rmerge.pl
 %.responses.tsv: dropdir/%.manual.tsv dropdir/%_disk/BIOLOGY*.dlm rmerge.pl
 	$(PUSH)
 
 ## Scantron-office scores
 Ignore += *.office.csv
-## midterm2.office.csv: 
+## final.office.csv: 
 %.office.csv: dropdir/%_disk/StudentScoresWebCT.csv
 	perl -ne 'print if /^[a-z0-9]*@/' $< > $@
 
 ## Our scores
 Ignore += $(wildcard *.scoring.csv)
 ### Formatted key sheet (made from scantron.csv)
-## make Tests/midterm2.scantron.csv ## to stop making forever ##
-## midterm2.scoring.csv:
+## make Tests/final.scantron.csv ## to stop making forever ##
+## final.scoring.csv:
 %.scoring.csv: Tests/%.scantron.csv scoring.pl
 	$(PUSH)
 
 ## Score the students
 ## How many have weird bubble versions? How many have best ≠ bubble?
-## midterm1.scores.Rout:  midterm1.responses.tsv midterm1.scoring.csv scores.R
-## midterm2.scores.Rout:  midterm2.responses.tsv midterm2.scoring.csv scores.R
+## final.scores.Rout:  final.responses.tsv final.scoring.csv scores.R
 %.scores.Rout: %.responses.tsv %.scoring.csv scores.R
 	$(run-R)
 
 ## Compare
 ## Now fewer people have score ≠ best score. Don't worry?
-## midterm1.scorecomp.Rout: midterm1.office.csv midterm1.scores.Rout scorecomp.R
-## midterm2.scorecomp.Rout: midterm2.office.csv midterm2.scores.Rout scorecomp.R
+## final.scorecomp.Rout: final.office.csv final.scores.Rout scorecomp.R
+## 2019 Apr 24 (Wed) Only non-best is because of non-existent version 5
 %.scorecomp.Rout: %.office.csv %.scores.Rout scorecomp.R
 	$(run-R)
 
@@ -192,8 +191,7 @@ Ignore += $(wildcard *.scoring.csv)
 Sources += idpatch.csv
 %.patch.Rout: %.scores.Rout idpatch.csv idpatch.R
 	$(run-R)
-## midterm1.patch.Rout: idpatch.R
-## midterm2.patch.Rout: idpatch.R
+## final.patch.Rout: idpatch.R
 
 ## Merge SAs (from TA sheet) with patched scores (calculated from scantrons)
 ## Set numeric to merge here. Pad somewhere downstream
