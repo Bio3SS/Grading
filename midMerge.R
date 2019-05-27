@@ -1,6 +1,7 @@
 library(readr)
 library(dplyr)
 
+## Pull midterm number from target name
 num <- gsub("[[:alpha:].]", "", rtargetname)
 
 ## Use right_join to drop students dropped from TAmarks

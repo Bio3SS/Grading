@@ -1,6 +1,9 @@
 library(dplyr)
 library(readr)
 
+summary(students)
+summary(scores)
+
 (left_join(students, scores)
 	%>% mutate(idnum=(
 			sprintf("%9d", idnum) 

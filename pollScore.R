@@ -23,13 +23,18 @@ sf <- (sf
 )
 
 ef <- read.table(input_files[[1]], header=TRUE)
-df <- merge(sf, ef, all.x=TRUE)
+df <- full_join(sf, ef)
 df <- within(df, {
 	extra[is.na(extra)] <- 0
+	score[is.na(score)] <- 0
+	manual[is.na(manual)] <- 0
 	score <- score+extra
-	score <- 2*pmin(1, score/(needMax*weight))
+	score <- 2*pmin(1, score/(needMax*weight))+manual
 	score <- round(100*score)/100
 })
+
+## Check for suspicious overflows
+print(df %>% filter(score>2))
 
 scores <- (df
 	%>% filter(!is.na(score))

@@ -12,7 +12,7 @@ for (n in names(envir_list)){
 	)
 	tests <- (left_join(tests,
 		(envir_list[[n]]$scores
-			%>% select(idnum, bestScore)
+			%>% transmute(idnum=as.numeric(idnum), bestScore=bestScore)
 			%>% setNames(c("idnum", short))
 		)
 	))
