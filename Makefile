@@ -276,7 +276,7 @@ mosaic_grade.Rout: dropdir/mosaic.csv course.Rout mosaic_grade.R
 ## There is no guidance about students with incomplete marks; let's see what happens
 
 ## Copy grades to dropdir for diffing:
-#### cp mosaic_grade.Rout.csv dropdir
+#### cp mosaic_grade.Rout.csv dropdir ##
 Ignore += grade.diff
 grade.diff: mosaic_grade.Rout.csv dropdir/mosaic_grade.Rout.csv
 	$(diff)
