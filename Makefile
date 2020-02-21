@@ -17,13 +17,6 @@ current: target
 Sources = Makefile README.md LICENSE.md
 ms = makestuff
 
-Sources += $(ms)
-
-$(ms)/%.mk: $(ms)/Makefile 
-	touch $@
-
-$(ms)/Makefile:
-	git submodule update -i
 
 -include $(ms)/os.mk
 -include $(ms)/perl.def
@@ -290,7 +283,24 @@ Sources += grades.mk
 
 ######################################################################
 
--include $(ms)/git.mk
--include $(ms)/visual.mk
--include $(ms)/wrapR.mk
--include $(ms)/hotcold.mk
+### Makestuff
+
+Sources += Makefile
+
+## Sources += content.mk
+## include content.mk
+
+Ignore += makestuff
+msrepo = https://github.com/dushoff
+Makefile: makestuff/Makefile
+makestuff/Makefile:
+	git clone $(msrepo)/makestuff
+	ls $@
+
+-include makestuff/os.mk
+
+-include makestuff/wrapR.mk
+
+-include makestuff/git.mk
+-include makestuff/visual.mk
+-include makestuff/projdir.mk
