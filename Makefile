@@ -18,7 +18,6 @@ Sources = Makefile README.md LICENSE.md
 ms = makestuff
 
 
--include $(ms)/os.mk
 -include $(ms)/perl.def
 
 ##################################################################
